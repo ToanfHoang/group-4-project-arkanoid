@@ -1,3 +1,5 @@
+package arkanoid;
+
 public class GameObject {
     private String name;
     private int x;

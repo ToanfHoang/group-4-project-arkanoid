@@ -1,37 +1,36 @@
 package arkanoid;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class Ball extends MovableObject {
-    /*public int width = 23;
-    public int height = 23;
-    */
-    private int x;
-    private int y;
-    /*
-    private double dx = 0.25;
-    private double dy = -6;
 
-    private int speed = 5;
+    public Ball(double x, double y, double radius) {
+        // Gọi constructor lớp cha MovableObject
+        // width = height = radius * 2 để vẽ hình tròn
+        super(x, y, radius * 2, radius * 2);
 
-*/
-    public Ball(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-    public void getImage() {}
-    public void setX(int pos) {}
-    public void setY(int pos) {}
-    public int getX() {
-        return this.x;
-    }
-    public int getY() {
-        return this.y;
+        this.dx = 3;
+        this.dy = -3;
     }
 
-    public void checkBrickCollision() {}
-    public void checkPaddleCollision(Paddle paddle) {}
-    public void switchDirections() {}
-    public void hitPaddle(Paddle paddle) {}
-    public void render() {}
+    @Override
+    public void update() {
+        // Di chuyển bóng
+        move();
+
+        // Giới hạn trong màn hình 600x400
+        if (x <= 0 || x + width >= 600) {
+            dx = -dx;
+        }
+        if (y <= 0 || y + height >= 400) {
+            dy = -dy;
+        }
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        gc.setFill(Color.RED);
+        gc.fillOval(x, y, width, height);
+    }
 }

@@ -1,5 +1,6 @@
 package arkanoid;
 
+import javafx.scene.canvas.GraphicsContext;
 
 public class Ball extends MovableObject {
     public int width = 23;

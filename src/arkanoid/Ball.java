@@ -2,17 +2,18 @@ package arkanoid;
 
 
 public class Ball extends MovableObject {
-    public int width = 23;
+    /*public int width = 23;
     public int height = 23;
-
+    */
     private int x;
     private int y;
+    /*
     private double dx = 0.25;
     private double dy = -6;
 
     private int speed = 5;
 
-
+*/
     public Ball(int x, int y) {
         this.x = x;
         this.y = y;
@@ -29,9 +30,7 @@ public class Ball extends MovableObject {
 
     public void checkBrickCollision() {}
     public void checkPaddleCollision(Paddle paddle) {}
-    public void switchDirections(Brick brick) {}
+    public void switchDirections() {}
     public void hitPaddle(Paddle paddle) {}
     public void render() {}
-}
-
 }

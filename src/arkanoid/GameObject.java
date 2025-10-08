@@ -1,42 +1,24 @@
 package arkanoid;
 
-public class GameObject {
-    private String name;
-    private int x;
-    private int y;
+import javafx.scene.canvas.GraphicsContext;
 
-    public GameObject(String name, int x, int y) {
-        this.name = name;
+/**
+ * tọa độ và kích thước của các đối tượng trong trò chơi
+ */
+public abstract class GameObject {
+    protected double x, y, width, height;
+
+    public GameObject(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public String toString() {
-        return "GameObject{" +
-                "name='" + name + '\'' +
-                ", x=" + x +
-                ", y=" + y +
-                '}';
-    }
+    /**
+     * vẽ vật thể và cập nhật trạng thái của đối tượng
+     * @param gc
+     */
+    public abstract void render(GraphicsContext gc);
+    public abstract void update();
 }

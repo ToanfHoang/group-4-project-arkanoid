@@ -7,6 +7,13 @@ import javafx.scene.layout.Pane;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * lớp GameBoard quản lý và hiển thị các đối tượng trò chơi
+ * kế thừa từ Pane để tạo một vùng chứa đồ họa
+ * sử dụng Canvas để vẽ các đối tượng trò chơi như paddle, ball và bricks
+ * cung cấp phương thức initLevel để khởi tạo các đối tượng trò chơi
+ * cung cấp phương thức renderAll để vẽ tất cả các đối tượng trên bảng trò chơi
+ */
 
 public class GameBoard extends Pane {
     private Canvas canvas;

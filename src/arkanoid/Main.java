@@ -4,6 +4,12 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * lớp Main khởi động ứng dụng JavaFX và thiết lập cửa sổ trò chơi
+ * tạo một bảng trò chơi với kích thước xác định
+ * hiển thị bảng trò chơi trong cửa sổ
+ * gọi phương thức renderAll để vẽ tất cả các đối tượng trong bảng trò chơi
+ */
 public class Main extends Application {
 
     private final int WIDTH = 600;

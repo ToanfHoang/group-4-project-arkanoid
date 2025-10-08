@@ -7,10 +7,14 @@ import javafx.scene.canvas.GraphicsContext;
  * thêm thuộc tính dx, dy để xác định vận tốc di chuyển theo trục x và y
  */
 public abstract class MovableObject {
-    protected double x, y, width, height;
-    protected double dx, dy;
+    protected double x;
+    protected double y;
+    protected double width;
+    protected double height;
+    protected double dx;
+    protected double dy;
 
-    public MovableObject(double x, double y, double width, double height) {
+    protected MovableObject(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;

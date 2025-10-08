@@ -17,7 +17,7 @@ public class Paddle extends MovableObject{
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.BLUE);
+        gc.setFill(Color.BLACK);
         gc.fillRect(x, y, width, height);
     }
     @Override
@@ -33,5 +33,4 @@ public class Paddle extends MovableObject{
     public void stop() {
         dx = 0;
     }
-
 }

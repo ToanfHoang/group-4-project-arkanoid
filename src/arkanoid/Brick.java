@@ -7,5 +7,6 @@ public class Brick {
     }
 
     public void render(GraphicsContext gc) {
+
     }
 }

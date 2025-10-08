@@ -15,20 +15,17 @@ public class GameBoard extends Pane {
     private Ball ball;
     private List<Brick> bricks = new ArrayList<>();
 
-    public GameBoard() {
-        canvas = new Canvas(600, 400);
+    public GameBoard(int width, int height) {
+        canvas = new Canvas(width, height);
         gc = canvas.getGraphicsContext2D();
         getChildren().add(canvas);
 
         initLevel();
     }
 
-    public GameBoard(int width, int height) {
-    }
-
     public void initLevel() {
-        paddle = new Paddle (350, 550, 100, 20);
-        ball = new Ball (390, 520, 10);
+        paddle = new Paddle (250, 370, 100, 20);
+        ball = new Ball (295, 350, 10);
 
         for (int i = 0; i < 5; i++){
             for (int j = 0; j < 8; j++){

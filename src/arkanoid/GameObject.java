@@ -6,9 +6,12 @@ import javafx.scene.canvas.GraphicsContext;
  * tọa độ và kích thước của các đối tượng trong trò chơi
  */
 public abstract class GameObject {
-    protected double x, y, width, height;
+    protected double x;
+    protected double y;
+    protected double width;
+    protected double height;
 
-    public GameObject(double x, double y, double width, double height) {
+    protected GameObject(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;

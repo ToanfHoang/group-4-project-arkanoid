@@ -36,7 +36,7 @@ public class GameBoard extends Pane {
 
         for (int i = 0; i < 5; i++){
             for (int j = 0; j < 8; j++){
-                bricks.add(new Brick(80 + j * 80, 50 + i * 30, 60, 20));
+                bricks.add(new Brick(80 + j * 50, 50 + i * 30, 50, 20));
             }
         }
     }

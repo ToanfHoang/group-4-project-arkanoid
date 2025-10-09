@@ -22,6 +22,6 @@ public abstract class GameObject {
      * vẽ vật thể và cập nhật trạng thái của đối tượng
      * @param gc
      */
-    public abstract void render(GraphicsContext gc);
+    public abstract void render( GraphicsContext gc);
     public abstract void update();
 }

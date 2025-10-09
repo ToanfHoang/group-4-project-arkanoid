@@ -2,17 +2,19 @@ package arkanoid;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 
 public class Brick {
     private double x, y, width, height;
     private boolean destroyed = false; // kiểm tra xem gạch có bị phá hủy hay không
-
+    private Image image;
     // constructor
     public Brick(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        image = new Image("file:resource/image/brick.png");
     }
 
     // vẽ viên gạch
@@ -20,9 +22,10 @@ public class Brick {
         if (!destroyed) {
             gc.setFill(Color.DARKCYAN); // màu gạch
             gc.fillRect(x, y, width, height);
+            gc.drawImage(image, x, y, width, height);
 
             // (tùy chọn) vẽ viền trắng quanh gạch để nhìn rõ hơn
-            gc.setStroke(Color.BLACK);
+            gc.setStroke(Color.WHITE);
             gc.strokeRect(x, y, width, height);
         }
     }

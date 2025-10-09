@@ -33,8 +33,10 @@ public class GameBoard extends Pane {
 
         initLevel();
 
+        // Thiết lập sự kiện di chuyển chuột để điều khiển paddle
         canvas.setOnMouseMoved(event -> {
-            paddle.setX(event.getX() - paddle.getWidth() / 2);
+            double mouseX = event.getX();
+            paddle.setX(mouseX - paddle.getWidth() / 2, (int) canvas.getWidth());
             renderAll();
         });
     }

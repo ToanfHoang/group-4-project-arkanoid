@@ -6,12 +6,14 @@ import javafx.scene.image.Image;
 import java.awt.*;
 
 /*
-    * tao lớp Paddle kế thừa từ MovableObject
-    * có thể di chuyển trái phải
-    * vẽ hình chữ nhật màu xanh dương
-    * có thể dừng lại
-    * tốc độ di chuyển cố định
-    * kích thước và vị trí khởi tạo từ tham số truyền vào
+    * lớp Paddle đại diện cho thanh điều khiển trong trò chơi Arkanoid
+    * có thuộc tính vị trí (x, y), kích thước (width, height) và hình ảnh (paddle)
+    * cung cấp các phương thức để lấy và thay đổi vị trí x của paddle
+    * và phương thức render để vẽ paddle
+    * sử dụng hình ảnh từ file "resource/image/paddle.png" để hiển thị paddle
+    * kích thước và vị trí của paddle được xác định khi tạo đối tượng Paddle
+    * paddle di chuyển theo trục x để người chơi điều khiển
+    * paddle có chiều rộng cố định để người chơi dễ dàng đánh bóng
  */
 public class Paddle {
     private double x, y, width, height;
@@ -45,20 +47,13 @@ public class Paddle {
         gc.drawImage(paddle, x, y, width, height);
     }
 
-    /*
-    @Override
-    public void update(){
-        move();
+    public  void setX(double newX, int boardWidth) {
+        if (newX < 0) {
+            this.x = 0;
+        } else if (newX + width > boardWidth) {
+            this.x = boardWidth - width;
+        } else {
+            this.x = newX;
+        }
     }
-    public void moveLeft(){
-        dx = -5;
-    }
-    public void moveRight() {
-        dx = 5;
-    }
-    public void stop() {
-        dx = 0;
-    }
-
-*/
 }

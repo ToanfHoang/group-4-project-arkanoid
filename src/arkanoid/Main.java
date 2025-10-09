@@ -2,7 +2,11 @@ package arkanoid;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
+import java.awt.*;
 
 /**
  * lớp Main khởi động ứng dụng JavaFX và thiết lập cửa sổ trò chơi
@@ -25,6 +29,10 @@ public class Main extends Application {
 
 
     }
+
+
+
+
 
     public static void main(String[] args) {
         launch(args);

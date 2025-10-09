@@ -10,16 +10,38 @@ import javafx.scene.paint.Color;
     * tốc độ di chuyển cố định
     * kích thước và vị trí khởi tạo từ tham số truyền vào
  */
-public class Paddle extends MovableObject{
+public class Paddle {
+    private double x, y, width, height;
+
     public Paddle(double x, double y, double width, double height) {
-        super(x,y,width,height);
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
-    @Override
+    // lấy giá trị x
+    public double getX() {
+        return x;
+    }
+
+    // thay đổi giá trị x
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    // Getter: lấy chiều rộng
+    public double getWidth() {
+        return width;
+    }
+
+
     public void render(GraphicsContext gc) {
         gc.setFill(Color.BLACK);
         gc.fillRect(x, y, width, height);
     }
+
+    /*
     @Override
     public void update(){
         move();
@@ -33,4 +55,6 @@ public class Paddle extends MovableObject{
     public void stop() {
         dx = 0;
     }
+
+*/
 }

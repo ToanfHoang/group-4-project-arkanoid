@@ -26,19 +26,27 @@ public class GameBoard extends Pane {
         canvas = new Canvas(width, height);
         gc = canvas.getGraphicsContext2D();
         getChildren().add(canvas);
+
         initLevel();
+
+        canvas.setOnMouseMoved(event -> {
+            paddle.setX(event.getX() - paddle.getWidth() / 2);
+            renderAll();
+        });
+
     }
 
     public void initLevel() {
         paddle = new Paddle (250, 370, 100, 20);
         ball = new Ball (295, 350, 10);
 
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < 7; i++){
             for (int j = 0; j < 10; j++){
                 bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 20));
             }
         }
     }
+
 
     public void renderAll() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());

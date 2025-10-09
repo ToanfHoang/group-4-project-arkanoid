@@ -26,7 +26,6 @@ public class GameBoard extends Pane {
         canvas = new Canvas(width, height);
         gc = canvas.getGraphicsContext2D();
         getChildren().add(canvas);
-
         initLevel();
     }
 
@@ -34,9 +33,9 @@ public class GameBoard extends Pane {
         paddle = new Paddle (250, 370, 100, 20);
         ball = new Ball (295, 350, 10);
 
-        for (int i = 0; i < 5; i++){
-            for (int j = 0; j < 8; j++){
-                bricks.add(new Brick(80 + j * 50, 50 + i * 30, 50, 20));
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 10; j++){
+                bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 20));
             }
         }
     }

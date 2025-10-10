@@ -22,14 +22,7 @@ public class Paddle extends MovableObject {
     private  double hitbox_paddle_width ;
     private  double hitbox_paddle_height;
 
-    @Override
-    public void update( double hitbox_paddle_height,
-                        double hitbox_paddle_width,
-                        double hitbox_ball_radius ) {
-        // không cần cập nhật vị trí tự động, paddle di chuyển theo chuột
 
-
-    }
     public Paddle(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.x = x;
@@ -61,6 +54,11 @@ public class Paddle extends MovableObject {
 
     public void render(GraphicsContext gc) {
         gc.drawImage(paddle, x, y, width, height);
+    }
+
+    @Override
+    public void update() {
+
     }
 
     public  void setX(double newX, int boardWidth) {

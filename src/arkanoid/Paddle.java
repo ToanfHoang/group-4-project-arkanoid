@@ -15,15 +15,31 @@ import java.awt.*;
     * paddle di chuyển theo trục x để người chơi điều khiển
     * paddle có chiều rộng cố định để người chơi dễ dàng đánh bóng
  */
-public class Paddle {
-    private double x, y, width, height;
+public class Paddle extends MovableObject {
+
     private Image paddle;
 
+    private  double hitbox_paddle_width ;
+    private  double hitbox_paddle_height;
+
+    @Override
+    public void update( double hitbox_paddle_height,
+                        double hitbox_paddle_width,
+                        double hitbox_ball_radius ) {
+        // không cần cập nhật vị trí tự động, paddle di chuyển theo chuột
+
+
+    }
     public Paddle(double x, double y, double width, double height) {
+        super(x, y, width, height);
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+
+        this.hitbox_paddle_height = height;
+        this.hitbox_paddle_width = width;
+
         paddle = new Image("file:resource/image/paddle.png");
     }
 
@@ -56,4 +72,6 @@ public class Paddle {
             this.x = newX;
         }
     }
+
+
 }

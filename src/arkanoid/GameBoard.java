@@ -35,7 +35,7 @@ public class GameBoard extends Pane {
         background = new Image("file:resource/image/background.png");
         initLevel();
 
-        // Thiết lập sự kiện di chuyển chuột để điều khiển paddle
+        // di chuyển chuột để điều khiển paddle
         canvas.setOnMouseMoved(event -> {
             double mouseX = event.getX();
             paddle.setX(mouseX - paddle.getWidth() / 2, (int) canvas.getWidth());
@@ -60,7 +60,7 @@ public class GameBoard extends Pane {
 
     public void initLevel() {
         paddle = new Paddle (250, 370, 100, 20);
-        ball = new Ball (295, 350, 10, 520,700 );
+        ball = new Ball (495, 350, 10) ;
         bricks.clear();
 
         for (int i = 0; i < 7; i++){

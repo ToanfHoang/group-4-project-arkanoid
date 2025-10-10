@@ -2,6 +2,9 @@ package arkanoid;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
+import java.awt.*;
+
 /*
     * tao lớp Paddle kế thừa từ MovableObject
     * có thể di chuyển trái phải
@@ -12,12 +15,14 @@ import javafx.scene.paint.Color;
  */
 public class Paddle {
     private double x, y, width, height;
+    private Image paddle;
 
     public Paddle(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        paddle = new Image("file:resource/image/paddle.png");
     }
 
     // lấy giá trị x
@@ -37,8 +42,7 @@ public class Paddle {
 
 
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.BLACK);
-        gc.fillRect(x, y, width, height);
+        gc.drawImage(paddle, x, y, width, height);
     }
 
     /*

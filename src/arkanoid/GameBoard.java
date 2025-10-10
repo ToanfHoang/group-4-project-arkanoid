@@ -2,8 +2,10 @@ package arkanoid;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
-
+import javafx.scene.image.Image;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +23,13 @@ public class GameBoard extends Pane {
     private Paddle paddle;
     private Ball ball;
     private List<Brick> bricks = new ArrayList<>();
+    private Image background;
 
     public GameBoard(int width, int height) {
         canvas = new Canvas(width, height);
         gc = canvas.getGraphicsContext2D();
         getChildren().add(canvas);
+        background = new Image("file:resource/image/background.png");
 
         initLevel();
 
@@ -33,7 +37,10 @@ public class GameBoard extends Pane {
             paddle.setX(event.getX() - paddle.getWidth() / 2);
             renderAll();
         });
+    }
 
+    private void update() {
+        ball.update();
     }
 
     public void initLevel() {
@@ -42,21 +49,21 @@ public class GameBoard extends Pane {
 
         for (int i = 0; i < 7; i++){
             for (int j = 0; j < 10; j++){
-                bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 20));
+                bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 30));
             }
         }
     }
 
 
+
     public void renderAll() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc .drawImage(background, 0, 0, canvas.getWidth(), canvas.getHeight());
         paddle.render(gc);
         ball.render(gc);
         for (Brick brick : bricks){
             //Ball brick = null
             brick.render(gc);
         }
-
-
     }
 }

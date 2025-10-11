@@ -15,15 +15,24 @@ import java.awt.*;
     * paddle di chuyển theo trục x để người chơi điều khiển
     * paddle có chiều rộng cố định để người chơi dễ dàng đánh bóng
  */
-public class Paddle {
-    private double x, y, width, height;
+public class Paddle extends MovableObject {
+
     private Image paddle;
 
+    private  double hitbox_paddle_width ;
+    private  double hitbox_paddle_height;
+
+
     public Paddle(double x, double y, double width, double height) {
+        super(x, y, width, height);
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+
+        this.hitbox_paddle_height = height;
+        this.hitbox_paddle_width = width;
+
         paddle = new Image("file:resource/image/paddle.png");
     }
 
@@ -47,6 +56,11 @@ public class Paddle {
         gc.drawImage(paddle, x, y, width, height);
     }
 
+    @Override
+    public void update() {
+
+    }
+
     public  void setX(double newX, int boardWidth) {
         if (newX < 0) {
             this.x = 0;
@@ -56,4 +70,6 @@ public class Paddle {
             this.x = newX;
         }
     }
+
+
 }

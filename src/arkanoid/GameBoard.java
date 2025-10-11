@@ -35,7 +35,7 @@ public class GameBoard extends Pane {
         background = new Image("file:resource/image/background.png");
         initLevel();
 
-        // Thiết lập sự kiện di chuyển chuột để điều khiển paddle
+        // di chuyển chuột để điều khiển paddle
         canvas.setOnMouseMoved(event -> {
             double mouseX = event.getX();
             paddle.setX(mouseX - paddle.getWidth() / 2, (int) canvas.getWidth());

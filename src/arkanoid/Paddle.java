@@ -56,4 +56,8 @@ public class Paddle {
             this.x = newX;
         }
     }
+
+    public int getY() {
+        return (int) y;
+    }
 }

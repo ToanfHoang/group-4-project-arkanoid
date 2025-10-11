@@ -43,6 +43,7 @@ public class GameBoard extends Pane {
         });
         startGameLoop();
     }
+
     private void startGameLoop() {
         gameLoop = new AnimationTimer() {
             @Override
@@ -56,30 +57,57 @@ public class GameBoard extends Pane {
 
     private void update() {
         ball.update();
+        // Kiểm tra va chạm giữa ball và paddle
+        if (ball.getY() + ball.getHeight() >= paddle.getY() &&
+                ball.getX() + ball.getWidth() >= paddle.getX() &&
+                ball.getX() <= paddle.getX() + paddle.getWidth()) {
+            ball.setDy(-ball.getDy()); // Đổi hướng bóng khi va chạm với paddle
+            ball.setY(paddle.getY() - ball.getHeight()); // Đặt bóng lên trên paddle
+        }
     }
 
     public void initLevel() {
-        paddle = new Paddle (250, 370, 100, 20);
-        ball = new Ball (495, 350, 10) ;
+        paddle = new Paddle(250, 370, 100, 20);
+        ball = new Ball(295, 350, 10) {
+            @Override
+            public void update() {
+                move();
+                if (x <= 0 || x + width >= canvas.getWidth()) {
+                    dx = -dx; // Đổi hướng khi chạm tường trái hoặc phải
+                }
+                if (y <= 0) {
+                    dy = -dy; // Đổi hướng khi chạm tường trên
+                }
+                if (y + height >= canvas.getHeight()) {
+                    // Bóng rơi xuống dưới cùng, có thể xử lý mất mạng hoặc kết thúc trò chơi ở đây
+                    dy = -dy; // Tạm thời đổi hướng lên để bóng không biến mất
+                    y = canvas.getHeight() - height; // Đặt bóng lại trên cùng
+                }
+            }
+
+            @Override
+            public double getY(double v) {
+                return 0;
+            }
+        };
         bricks.clear();
 
-        for (int i = 0; i < 7; i++){
-            for (int j = 0; j < 10; j++){
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 10; j++) {
                 bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 30));
             }
         }
     }
 
-
-
     public void renderAll() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc .drawImage(background, 0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(background, 0, 0, canvas.getWidth(), canvas.getHeight());
         paddle.render(gc);
         ball.render(gc);
-        for (Brick brick : bricks){
+        for (Brick brick : bricks) {
             //Ball brick = null
             brick.render(gc);
         }
     }
 }
+

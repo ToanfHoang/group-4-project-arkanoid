@@ -1,14 +1,15 @@
 package arkanoid;
 
-import javafx.animation.Animation;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.Image;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.animation.AnimationTimer;
+
 /**
  * lớp GameBoard quản lý và hiển thị các đối tượng trò chơi
  * kế thừa từ Pane để tạo một vùng chứa đồ họa
@@ -64,6 +65,23 @@ public class GameBoard extends Pane {
             ball.setDy(-ball.getDy()); // Đổi hướng bóng khi va chạm với paddle
             ball.setY(paddle.getY() - ball.getHeight()); // Đặt bóng lên trên paddle
         }
+
+        // va cham voi gach
+        for (Brick brick : bricks) {
+            if(!brick.isDestroyed() && checkCollision(ball, brick)){
+                brick.hasCollided();
+                ball.setDy(-ball.getDy());
+                break; // tranhva cham nhieu gach
+            }
+        }
+    }
+
+    //ktra va cham ball va brick
+    private boolean checkCollision(Ball ball, Brick brick) {
+        return ball.getX() < brick.getX() + brick.getWidth() &&
+                ball.getX() + ball.getWidth() > brick.getX() &&
+                ball.getY() < brick.getY() + brick.getHeight() &&
+                ball.getY() + ball.getHeight() > brick.getY();
     }
 
     public void initLevel() {

@@ -29,4 +29,28 @@ public class Brick {
             gc.strokeRect(x, y, width, height);
         }
     }
+    // va chạm
+    public void hasCollided(){
+        destroyed = true;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
 }

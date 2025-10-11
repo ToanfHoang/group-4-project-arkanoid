@@ -31,8 +31,6 @@ public abstract class Ball extends MovableObject {
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(Color.RED);
-        gc.fillOval(x, y, width, height);
         gc.drawImage(image, x, y, width, height);
     }
 
@@ -63,4 +61,5 @@ public abstract class Ball extends MovableObject {
         return dy;
     }
 
+    public abstract double getY(double v);
 }

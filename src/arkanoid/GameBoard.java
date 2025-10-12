@@ -59,9 +59,11 @@ public class GameBoard extends Pane {
     private void update() {
         ball.update();
         // Kiểm tra va chạm giữa ball và paddle
-        if (ball.getY() + ball.getHeight() >= paddle.getY() &&
+        if (    ball.getY() + ball.getHeight() >= paddle.getY() &&
                 ball.getX() + ball.getWidth() >= paddle.getX() &&
-                ball.getX() <= paddle.getX() + paddle.getWidth()) {
+                ball.getX() <= paddle.getX() + paddle.getWidth() &&
+                ball.getDy() > 0) { // Chỉ va chạm khi ball đang đi XUỐNG
+
             ball.setDy(-ball.getDy()); // Đổi hướng bóng khi va chạm với paddle
             ball.setY(paddle.getY() - ball.getHeight()); // Đặt bóng lên trên paddle
         }
@@ -70,18 +72,40 @@ public class GameBoard extends Pane {
         for (Brick brick : bricks) {
             if(!brick.isDestroyed() && checkCollision(ball, brick)){
                 brick.hasCollided();
-                ball.setDy(-ball.getDy());
-                break; // tranhva cham nhieu gach
+
+                // Tính độ chồng lấn theo từng phương
+                double overlapLeft = (ball.getX() + ball.getWidth()) - brick.getX();
+                double overlapRight = (brick.getX() + brick.getWidth()) - ball.getX();
+                double overlapTop = (ball.getY() + ball.getHeight()) - brick.getY();
+                double overlapBottom = (brick.getY() + brick.getHeight()) - ball.getY();
+
+                // Tìm overlap nhỏ nhất
+                double minOverlap = Math.min(
+                        Math.min(overlapLeft, overlapRight),
+                        Math.min(overlapTop, overlapBottom)
+                );
+
+                // Va chạm từ trên hoặc dưới → đổi dy
+                if (minOverlap == overlapTop || minOverlap == overlapBottom) {
+                    ball.setDy(-ball.getDy());
+                }
+                // Va chạm từ trái hoặc phải → đổi dx
+                else {
+                    ball.setDx(-ball.getDx());
+                }
+
+                break; // Chỉ xử lý va chạm với một viên gạch tại một thời điểm
+
             }
         }
     }
 
     //ktra va cham ball va brick
     private boolean checkCollision(Ball ball, Brick brick) {
-        return ball.getX() < brick.getX() + brick.getWidth() &&
-                ball.getX() + ball.getWidth() > brick.getX() &&
-                ball.getY() < brick.getY() + brick.getHeight() &&
-                ball.getY() + ball.getHeight() > brick.getY();
+        return ball.getX() < brick.getX() + brick.getWidth() && // kiểm tra tọa độ trái của ball với tọa độ phải của brick
+                ball.getX() + ball.getWidth() > brick.getX() && // kiểm tra tọa độ phải của ball với tọa độ trái của brick
+                ball.getY() < brick.getY() + brick.getHeight() && // kiểm tra tọa độ trên của ball với tọa độ dưới của brick
+                ball.getY() + ball.getHeight() > brick.getY(); // kiểm tra tọa độ dưới của ball với tọa độ trên của brick
     }
 
     public void initLevel() {
@@ -98,15 +122,12 @@ public class GameBoard extends Pane {
                 }
                 if (y + height >= canvas.getHeight()) {
                     // Bóng rơi xuống dưới cùng, có thể xử lý mất mạng hoặc kết thúc trò chơi ở đây
-                    dy = -dy; // Tạm thời đổi hướng lên để bóng không biến mất
+                    //dy = -dy; // Tạm thời đổi hướng lên để bóng không biến mất
                     y = canvas.getHeight() - height; // Đặt bóng lại trên cùng
                 }
             }
 
-            @Override
-            public double getY(double v) {
-                return 0;
-            }
+
         };
         bricks.clear();
 

@@ -51,6 +51,9 @@ public class Paddle extends MovableObject {
         return width;
     }
 
+    // Getter: lấy chiều cao
+    public double getHeight() { return height;}
+
 
     public void render(GraphicsContext gc) {
         gc.drawImage(paddle, x, y, width, height);

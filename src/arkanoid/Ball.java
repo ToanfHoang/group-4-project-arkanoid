@@ -13,14 +13,14 @@ public abstract class Ball extends MovableObject {
         // width = height = radius * 2 để vẽ hình tròn
         image = new Image("file:resource/image/ball_1.png");
         // Khởi tạo vận tốc ban đầu
-        this.dx = 2;
-        this.dy = -2;
+        this.dx = 0.5;
+        this.dy = -0.5;
     }
 
     @Override
     public void update() {
         move();
-        if (x <=0 || x + width >= 600) {
+        if (x <= 0 || x + width >= 600) {
             dx = -dx; // Đổi hướng khi chạm tường trái hoặc phải
         }
         if (y <= 0 || y + height <= 400) {
@@ -38,27 +38,41 @@ public abstract class Ball extends MovableObject {
         return y;
     }
 
-    public double getHeight() {
-        return height;
-    }
-
     public double getX() {
         return x;
+    }
+
+    public double getHeight() {
+        return height;
     }
 
     public double getWidth() {
         return width;
     }
+
+    // lay van toc moi
     public double setDy(double newDy) {
         this.dy = newDy;
         return dy;
     }
+    public double setDx(double newDx) {
+        this.dx = newDx;
+        return dx;
+    }
+    public double getDy() {
+        return dy;
+    }
+    public double getDx() {
+        return dx;
+    }
+
     public double setY(double newY) {
         this.y = newY;
         return y;
     }
-    public double getDy() {
-        return dy;
+    public double setX(double newX) {
+        this.x = newX;
+        return x;
     }
     public void checkPaddleCollision(Paddle paddle) {
         // kiểm tra va chạm đơn giản
@@ -92,5 +106,6 @@ public abstract class Ball extends MovableObject {
     }
 
 
-    public abstract double getY(double v);
+
+
 }

@@ -11,6 +11,8 @@ public abstract class MovableObject {
     protected double y;
     protected double width;
     protected double height;
+
+    // vận tốc di chuyển theo trục x và y
     protected double dx;
     protected double dy;
 

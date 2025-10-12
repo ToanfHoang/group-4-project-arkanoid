@@ -21,7 +21,7 @@ import javafx.animation.AnimationTimer;
 public class GameBoard extends Pane {
     private Canvas canvas;
     private GraphicsContext gc;
-    private Paddle paddle;
+    private static Paddle paddle;
     private Ball ball;
     private List<Brick> bricks = new ArrayList<>();
     private Image background;
@@ -85,7 +85,7 @@ public class GameBoard extends Pane {
     }
 
     public void initLevel() {
-        paddle = new Paddle(250, 370, 100, 20);
+        paddle = new Paddle(250, 340, 100, 20);
         ball = new Ball(295, 350, 10) {
             @Override
             public void update() {
@@ -100,6 +100,13 @@ public class GameBoard extends Pane {
                     // Bóng rơi xuống dưới cùng, có thể xử lý mất mạng hoặc kết thúc trò chơi ở đây
                     dy = -dy; // Tạm thời đổi hướng lên để bóng không biến mất
                     y = canvas.getHeight() - height; // Đặt bóng lại trên cùng
+                }
+
+                checkPaddleCollision(GameBoard.paddle); // hoặc biến paddle bạn đang dùng
+
+                if (y > 400) {
+                    // rơi xuống đáy
+                    dy = -dy;
                 }
             }
 

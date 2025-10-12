@@ -74,4 +74,8 @@ public class Paddle extends MovableObject {
     public int getY() {
         return (int) y;
     }
+
+    public int getHeight() {
+        return 0;
+    }
 }

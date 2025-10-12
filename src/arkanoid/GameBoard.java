@@ -122,7 +122,7 @@ public class GameBoard extends Pane {
                 }
                 if (y + height >= canvas.getHeight()) {
                     // Bóng rơi xuống dưới cùng, có thể xử lý mất mạng hoặc kết thúc trò chơi ở đây
-                    //dy = -dy; // Tạm thời đổi hướng lên để bóng không biến mất
+                    dy = -dy; // Tạm thời đổi hướng lên để bóng không biến mất
                     y = canvas.getHeight() - height; // Đặt bóng lại trên cùng
                 }
 

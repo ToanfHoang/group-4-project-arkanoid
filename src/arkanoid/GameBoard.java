@@ -56,6 +56,15 @@ public class GameBoard extends Pane {
         gameLoop.start();
     }
 
+    private boolean gameOver = false;
+    private void endGameLoop() {
+        if (gameLoop != null) {
+            gameLoop.stop();
+            gameOver = true;
+            System.out.println("Game Over!");
+        }
+    }
+
     private void update() {
         ball.update();
         // Kiểm tra va chạm giữa ball và paddle
@@ -112,6 +121,11 @@ public class GameBoard extends Pane {
         paddle = new Paddle(250, 340, 100, 20);
         ball = new Ball(295, 350, 10) {
             @Override
+            public double getY(double v) {
+                return 0;
+            }
+
+            @Override
             public void update() {
                 move();
                 if (x <= 0 || x + width >= canvas.getWidth()) {
@@ -121,20 +135,10 @@ public class GameBoard extends Pane {
                     dy = -dy; // Đổi hướng khi chạm tường trên
                 }
                 if (y + height >= canvas.getHeight()) {
-                    // Bóng rơi xuống dưới cùng, có thể xử lý mất mạng hoặc kết thúc trò chơi ở đây
-                    dy = -dy; // Tạm thời đổi hướng lên để bóng không biến mất
-                    y = canvas.getHeight() - height; // Đặt bóng lại trên cùng
+                    endGameLoop(); // Kết thúc trò chơi khi bóng chạm đáy
                 }
-
                 checkPaddleCollision(GameBoard.paddle); // hoặc biến paddle bạn đang dùng
-
-                if (y > 400) {
-                    // rơi xuống đáy
-                    dy = -dy;
-                }
             }
-
-
         };
         bricks.clear();
 
@@ -145,6 +149,8 @@ public class GameBoard extends Pane {
         }
     }
 
+    private void checkPaddleCollision(Paddle paddle) {
+    }
     public void renderAll() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(background, 0, 0, canvas.getWidth(), canvas.getHeight());

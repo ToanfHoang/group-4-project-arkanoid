@@ -110,8 +110,6 @@ public class GameBoard extends Pane {
         }
     }
 
-    private void checkPaddleCollision(Paddle paddle) {
-    }
     public void renderAll() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(background, 0, 0, canvas.getWidth(), canvas.getHeight());

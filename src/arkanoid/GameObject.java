@@ -17,6 +17,7 @@ public abstract class GameObject {
         this.width = width;
         this.height = height;
     }
+
     /**
      * vẽ vật thể và cập nhật trạng thái của đối tượng
      * @param gc

@@ -7,7 +7,7 @@ public class Ball extends MovableObject {
     private Image image;
     private double canvasWidth;
     private double canvasHeight;
-
+    private boolean fellOut = false;
     public Ball(double x, double y, double radius, double canvasWidth, double canvasHeight) {
         super(x, y, radius * 2, radius * 2);
         this.canvasWidth = canvasWidth;
@@ -16,6 +16,7 @@ public class Ball extends MovableObject {
         this.dx = 2;
         this.dy = -2;
     }
+
 
     @Override
     public void update() {
@@ -33,14 +34,18 @@ public class Ball extends MovableObject {
 
         // Xử lý khi bóng rơi xuống đáy
         if (y + height >= canvasHeight) {
-            dy = -dy;
-            y = canvasHeight - height;
+            fellOut = true; // Đánh dấu bóng đã rơi ra ngoài
+            System.out.println("Ball fell out");
         }
+
     }
 
     @Override
     public void render(GraphicsContext gc) {
         gc.drawImage(image, x, y, width, height);
+    }
+    public boolean isFellOut() {
+        return fellOut;
     }
 
     public void checkPaddleCollision(Paddle paddle) {

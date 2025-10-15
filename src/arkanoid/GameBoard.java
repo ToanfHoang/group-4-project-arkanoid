@@ -16,6 +16,7 @@ public class GameBoard extends Pane {
     private List<Brick> bricks = new ArrayList<>();
     private Image background;
     private AnimationTimer gameLoop;
+    private boolean gameOver;
 
     public GameBoard(int width, int height) {
         canvas = new Canvas(width, height);
@@ -35,6 +36,13 @@ public class GameBoard extends Pane {
         startGameLoop();
     }
 
+    public void endGameLoop() {
+        if (gameLoop != null) {
+            gameLoop.stop();
+            gameOver = true;
+        }
+    }
+
     private void startGameLoop() {
         gameLoop = new AnimationTimer() {
             @Override
@@ -46,17 +54,15 @@ public class GameBoard extends Pane {
         gameLoop.start();
     }
 
-    private boolean gameOver = false;
-    private void endGameLoop() {
-        if (gameLoop != null) {
-            gameLoop.stop();
-            gameOver = true;
-            System.out.println("Game Over!");
-        }
-    }
-
     private void update() {
+        if(gameOver) {
+            return;
+        }
         ball.update();
+        if (ball.isFellOut()) {
+            endGameLoop();   // gameLoop.stop(); gameOver = true; ...
+            return;
+        }
         ball.checkPaddleCollision(paddle);
 
         // Xử lý va chạm với gạch
@@ -101,7 +107,6 @@ public class GameBoard extends Pane {
     public void initLevel() {
         paddle = new Paddle(250, 340, 100, 20);
         ball = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
-
         bricks.clear();
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 10; j++) {

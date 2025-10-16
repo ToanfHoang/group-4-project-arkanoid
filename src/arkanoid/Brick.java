@@ -8,6 +8,8 @@ public class Brick {
     private double x, y, width, height;
     private boolean destroyed = false; // kiểm tra xem gạch có bị phá hủy hay không
     private Image image;
+    public int hitPoints = 1; // số lần va chạm để phá hủy gạch
+
     // constructor
     public Brick(double x, double y, double width, double height) {
         this.x = x;

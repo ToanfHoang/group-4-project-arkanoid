@@ -4,17 +4,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Paddle extends MovableObject {
-    private Image image;
+    private final Image image;
 
     public Paddle(double x, double y, double width, double height) {
         super(x, y, width, height);
         this.image = new Image("file:resource/image/paddle.png");
     }
 
-    @Override
-    public void update() {
-        // Paddle không tự động di chuyển, chỉ di chuyển theo chuột
-    }
+
 
     @Override
     public void render(GraphicsContext gc) {

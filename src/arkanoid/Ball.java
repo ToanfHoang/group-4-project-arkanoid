@@ -4,17 +4,19 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Ball extends MovableObject {
-    private Image image;
-    private double canvasWidth;
-    private double canvasHeight;
+    private final Image image;
+    private final double canvasWidth;
+    private final double canvasHeight;
+    private double speed;
+
     private boolean fellOut = false;
     public Ball(double x, double y, double radius, double canvasWidth, double canvasHeight) {
         super(x, y, radius * 2, radius * 2);
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.image = new Image("file:resource/image/ball_1.png");
-        this.dx = 2;
-        this.dy = -2;
+        this.dx = 0.5;
+        this.dy = -0.5;
     }
 
 
@@ -72,9 +74,16 @@ public class Ball extends MovableObject {
             double angle = ratio * maxAngle;
 
             // Đặt lại vận tốc với góc mới
-            double speed = Math.sqrt(dx * dx + dy * dy);
+            speed = Math.sqrt(dx * dx + dy * dy);
             dx = speed * Math.sin(angle);
             dy = -speed * Math.cos(angle);
         }
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 }

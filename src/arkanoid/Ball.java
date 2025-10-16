@@ -15,8 +15,8 @@ public class Ball extends MovableObject {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.image = new Image("file:resource/image/ball_1.png");
-        this.dx = 2;
-        this.dy = -2;
+        this.dx = 0.5;
+        this.dy = -0.5;
     }
 
 

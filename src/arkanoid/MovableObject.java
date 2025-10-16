@@ -15,6 +15,7 @@ public abstract class MovableObject {
     protected double dx; // Vận tốc theo trục X
     protected double dy; // Vận tốc theo trục Y
 
+
     public MovableObject(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
@@ -31,7 +32,7 @@ public abstract class MovableObject {
     }
 
     // Phương thức trừu tượng bắt buộc các lớp con phải implement
-    public abstract void update();
+    public void update() {    };
     public abstract void render(GraphicsContext gc);
 
     // Getters
@@ -59,6 +60,8 @@ public abstract class MovableObject {
         return dy;
     }
 
+
+
     // Setters
     public void setX(double x) {
         this.x = x;
@@ -83,4 +86,5 @@ public abstract class MovableObject {
     public void setHeight(double height) {
         this.height = height;
     }
+
 }

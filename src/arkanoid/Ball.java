@@ -8,6 +8,7 @@ public class Ball extends MovableObject {
     private final double canvasWidth;
     private final double canvasHeight;
     private double speed;
+    private boolean attached = true; // Bóng ban đầu gắn vào paddle
 
     private boolean fellOut = false;
     public Ball(double x, double y, double radius, double canvasWidth, double canvasHeight) {
@@ -15,13 +16,16 @@ public class Ball extends MovableObject {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.image = new Image("file:resource/image/ball_1.png");
-        this.dx = 0.5;
-        this.dy = -0.5;
+        this.dx = 1;
+        this.dy = -1;
     }
 
 
     @Override
     public void update() {
+        if (attached) {
+            return; // Nếu bóng đang gắn vào paddle, không di chuyển
+        }
         move();
 
         // Xử lý va chạm với tường trái/phải
@@ -37,9 +41,7 @@ public class Ball extends MovableObject {
         // Xử lý khi bóng rơi xuống đáy
         if (y + height >= canvasHeight) {
             fellOut = true; // Đánh dấu bóng đã rơi ra ngoài
-            System.out.println("Ball fell out");
         }
-
     }
 
     @Override
@@ -86,4 +88,26 @@ public class Ball extends MovableObject {
     public void setSpeed(double speed) {
         this.speed = speed;
     }
+    public boolean isAttached() { return attached; }
+
+    public void attachToPaddle(Paddle paddle) {
+        attached = true;
+        // đặt bóng ngay trên paddle, chính giữa
+        this.x = paddle.getX() + paddle.getWidth() / 2 - this.width / 2;
+        this.y = paddle.getY() - this.height - 1;
+        this.dx = 0;
+        this.dy = 0;
+    }
+
+    public void releaseFromPaddle() {
+        if (attached) {
+            attached = false;
+            // bắn lên trên một góc nhẹ
+            double speed = 1;
+            double angle = Math.toRadians(-60 + Math.random() * 120); // góc ngẫu nhiên
+            this.dx = speed * Math.sin(angle);
+            this.dy = -Math.abs(speed * Math.cos(angle));
+        }
+    }
+
 }

@@ -5,8 +5,15 @@ import javafx.scene.paint.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
+import javafx.scene.image.Image;
 
 public class StatusGame {
+
+    private Image allBackground = new Image("file:resource/image/all_background.png");
+    private Image btnPlay = new Image("file:resource/image/play.png");
+    private Image btnContinue = new Image("file:resource/image/continue.png");
+    private Image btnReplay = new Image("file:resource/image/replay.png");
+    private Image btnExit = new Image("file:resource/image/exit.png");
 
     public void triggerButtonEffect(String overContinue) {
     }
@@ -19,21 +26,22 @@ public class StatusGame {
         return false;
     }
 
-    public enum GameState { MENU, PLAYING, PAUSED, GAME_OVER }
+    public enum GameState { MENU, PLAYING, PAUSED, GAME_OVER,  }
     private GameState state = GameState.MENU;
 
     private long flashTime = 0;
     private String activeButton = "";
     private String hoverButton = "";
 
-    private final double startX = 220, startY = 220, startW = 160, startH = 50;
+    private final double playX = 220, playY = 220, playW = 160, playH = 50;
     private final double exitX  = 220, exitY  = 290, exitW  = 160, exitH  = 50;
 
     private final double contX = 220, contY = 200, contW = 160, contH = 50;
+    private final double replayX = 220, replayY = 270, replayW = 160, replayH = 50;
     private final double menuX = 220, menuY = 270, menuW = 160, menuH = 50;
 
-    public boolean isInsideStart(double x, double y) {
-        return x >= startX && x <= startX + startW && y >= startY && y <= startY + startH;
+    public boolean isInsidePlay(double x, double y) {
+        return x >= playX && x <= playX + playW && y >= playY && y <= playY + playH;
     }
     public boolean isInsideExit(double x, double y) {
         return x >= exitX && x <= exitX + exitW && y >= exitY && y <= exitY + exitH;
@@ -41,8 +49,8 @@ public class StatusGame {
     public boolean isInsideContinue(double x, double y) {
         return x >= contX && x <= contX + contW && y >= contY && y <= contY + contH;
     }
-    public boolean isInsideMenu(double x, double y) {
-        return x >= menuX && x <= menuX + menuW && y >= menuY && y <= menuY + menuH;
+    public boolean isInsideReplay(double x, double y) {
+        return x >= replayX && x <= replayX + replayW && y >= replayY && y <= replayY + replayH;
     }
 
     public boolean isMenu()     { return state == GameState.MENU; }
@@ -78,59 +86,46 @@ public class StatusGame {
         };
         gc.setFill(new LinearGradient(0, 0, 0, h, false, CycleMethod.NO_CYCLE, stops));
         gc.fillRect(0, 0, w, h);
-
-        // Tuỳ trạng thái
+        gc.drawImage(allBackground, 0, 0, w, h);
         if (isMenu()) {
             drawNeonText(gc, "ARKANOID", w / 2, 140, Color.CYAN, 72);
-            drawButton(gc, "START", startX, startY, startW, startH);
-            drawButton(gc, "EXIT", exitX, exitY, exitW, exitH);
-            drawHint(gc, w, h, "CLICK TO START");
+            gc.drawImage(btnPlay, playX, playY, playW, playH);
+            gc.drawImage(btnExit, exitX, exitY, exitW, exitH);
         }
         else if (isPaused()) {
-            drawNeonText(gc, "PAUSED", w / 2, 140, Color.CYAN, 60);
-            drawButton(gc, "CONTINUE", contX, contY, contW, contH);
-            drawButton(gc, "MENU", menuX, menuY, menuW, menuH);
-            drawHint(gc, w, h, "PRESS P TO RESUME");
+            gc.drawImage(btnContinue, contX, contY, contW, contH);
+            gc.drawImage(btnReplay, replayX, replayY, replayW, replayH);
         }
         else if (isGameOver()) {
-            drawNeonText(gc, "GAME OVER", w / 2, 140, Color.ORANGE, 60);
-            drawButton(gc, "RETRY", contX, contY, contW, contH);
-            drawButton(gc, "MENU", menuX, menuY, menuW, menuH);
-            drawHint(gc, w, h, "PRESS R TO RESTART");
+            gc.drawImage(btnReplay, contX, contY, contW, contH);
+            gc.drawImage(btnExit, replayX, replayY, replayW, replayH);
         }
 
         // Hiệu ứng sáng click
         if (System.currentTimeMillis() - flashTime < 150) {
-            gc.setGlobalAlpha(0.5);
+            gc.setGlobalAlpha(0.6);
             gc.setFill(Color.AQUA);
             switch (activeButton) {
-                case "START" -> gc.fillRoundRect(startX, startY, startW, startH, 10, 10);
+                case "PLAY" -> gc.fillRoundRect(playX, playY, playW, playH, 10, 10);
                 case "EXIT" -> gc.fillRoundRect(exitX, exitY, exitW, exitH, 10, 10);
                 case "CONTINUE", "RETRY" -> gc.fillRoundRect(contX, contY, contW, contH, 10, 10);
-                case "MENU" -> gc.fillRoundRect(menuX, menuY, menuW, menuH, 10, 10);
+                case "REPLAY" -> gc.fillRoundRect(replayX, replayY, replayW, replayH, 10, 10);
             }
             gc.setGlobalAlpha(1.0);
         }
+
     }
 
     private void drawButton(GraphicsContext gc, String label, double x, double y, double w, double h) {
         boolean isHover = label.equals(hoverButton);
-
         Color neon = Color.CYAN.interpolate(Color.WHITE, isHover ? 0.4 : 0.0);
+
         gc.setLineWidth(3);
         gc.setStroke(neon);
-        gc.setFill(Color.rgb(0, 255, 255, isHover ? 0.15 : 0.05));
-
+        gc.setFill(Color.rgb(0, 255, 255, isHover ? 0.25 : 0.08));
         gc.fillRoundRect(x, y, w, h, 12, 12);
         gc.strokeRoundRect(x, y, w, h, 12, 12);
 
-        // Viền sáng mờ
-        gc.setGlobalAlpha(0.5);
-        gc.setStroke(Color.rgb(0, 255, 255, 0.3));
-        gc.strokeRoundRect(x - 2, y - 2, w + 4, h + 4, 16, 16);
-        gc.setGlobalAlpha(1);
-
-        // Text
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Consolas", 20));
         drawCenter(gc, w, x, y + h / 1.6, label);
@@ -139,16 +134,16 @@ public class StatusGame {
     private void drawNeonText(GraphicsContext gc, String text, double centerX, double y, Color color, int size) {
         Font font = Font.font("Consolas", size);
         gc.setFont(font);
-        gc.setFill(color);
-        gc.setStroke(color.brighter());
-        gc.setLineWidth(2);
         double textWidth = getTextWidth(font, text);
         double x = centerX - textWidth / 2;
 
-        // Phát sáng nhẹ
-        gc.setGlobalAlpha(0.3);
+        gc.setFill(color);
+        gc.setStroke(color.brighter());
+        gc.setLineWidth(2);
+
+        gc.setGlobalAlpha(0.25);
         gc.setFill(color.deriveColor(0, 1, 1, 0.2));
-        gc.fillText(text, x + 2, y + 2);
+        gc.fillText(text, x + 3, y + 3);
         gc.setGlobalAlpha(1);
 
         gc.strokeText(text, x, y);

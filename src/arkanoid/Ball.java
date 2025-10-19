@@ -9,15 +9,17 @@ public class Ball extends MovableObject {
     private final double canvasHeight;
     private double speed;
     private boolean attached = true; // Bóng ban đầu gắn vào paddle
-
     private boolean fellOut = false;
+
+    private final Sound sound = new Sound();
+
     public Ball(double x, double y, double radius, double canvasWidth, double canvasHeight) {
         super(x, y, radius * 2, radius * 2);
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.image = new Image("file:resource/image/ball_1.png");
-        this.dx = 1;
-        this.dy = -1;
+        this.dx = 3;
+        this.dy = -3;
     }
 
 
@@ -31,16 +33,22 @@ public class Ball extends MovableObject {
         // Xử lý va chạm với tường trái/phải
         if (x <= 0 || x + width >= canvasWidth) {
             dx = -dx;
+            sound.setFile(0);
+            sound.play();
         }
 
         // Xử lý va chạm với tường trên
         if (y <= 0) {
             dy = -dy;
+            sound.setFile(0);
+            sound.play();
         }
 
         // Xử lý khi bóng rơi xuống đáy
         if (y + height >= canvasHeight) {
-            fellOut = true; // Đánh dấu bóng đã rơi ra ngoài
+            fellOut = true;
+            sound.setFile(3); // fail.wav
+            sound.play();// Đánh dấu bóng đã rơi ra ngoài
         }
     }
 
@@ -52,13 +60,15 @@ public class Ball extends MovableObject {
         return fellOut;
     }
 
-    public void checkPaddleCollision(Paddle paddle) {
+    public boolean checkPaddleCollision(Paddle paddle) {
         // Kiểm tra va chạm với paddle
         if (y + height >= paddle.getY() &&
                 y + height <= paddle.getY() + paddle.getHeight() &&
                 x + width >= paddle.getX() &&
                 x <= paddle.getX() + paddle.getWidth() &&
                 dy > 0) { // Chỉ khi bóng đang đi xuống
+            sound.setFile(1); // fail.wav
+            sound.play();
 
             // Đặt bóng lên trên paddle
             y = paddle.getY() - height;
@@ -80,6 +90,7 @@ public class Ball extends MovableObject {
             dx = speed * Math.sin(angle);
             dy = -speed * Math.cos(angle);
         }
+        return false;
     }
 
     public double getSpeed() {

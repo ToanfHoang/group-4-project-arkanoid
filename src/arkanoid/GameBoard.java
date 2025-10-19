@@ -259,17 +259,17 @@ public class GameBoard extends Pane {
     Sound sound = new Sound();
     Sound bgm = new Sound();
 
-    public void playMusic(int i) {
+    public void playMusic(int i) { //chạy nhạc background
         bgm.setFile(i);
         bgm.play();
         bgm.loop();
     }
 
-    public void stopMusic() {
+    public void stopMusic() {  //dừng nhạc
         bgm.stop();
     }
 
-    public void playSE(int i) {
+    public void playSE(int i) {  //chạy Sound Effects
         sound.setFile(i);
         sound.play();
     }

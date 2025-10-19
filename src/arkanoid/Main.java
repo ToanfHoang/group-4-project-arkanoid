@@ -2,8 +2,6 @@ package arkanoid;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 

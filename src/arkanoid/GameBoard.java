@@ -151,6 +151,7 @@ public class GameBoard extends Pane {
         for (Brick brick : bricks) {
             if (!brick.isDestroyed() && checkCollision(ball, brick)) {
                 brick.hitPoints--;
+                playSE(2);
                 if (brick.hitPoints <= 0) {
                     brick.hasCollided();
                     // Giữ vận tốc hợp lý
@@ -222,6 +223,19 @@ public class GameBoard extends Pane {
 
         // Vẽ lớp overlay (menu, pause, game over)
         status.renderOverlay(gc, canvas.getWidth(), canvas.getHeight());
+    }
+
+    Sound sound = new Sound();
+    public void playMusic(int i){
+        sound.setFile(i);
+        sound.play();
+    }
+    public void stopMusic(){
+        sound.stop();
+    }
+    public void playSE(int i){
+        sound.setFile(i);
+        sound.play();
     }
 
 }

@@ -40,9 +40,9 @@ public class GameBoard extends Pane {
         canvas = new Canvas(width, height);
         gc = canvas.getGraphicsContext2D();
         getChildren().add(canvas);
-
         background = new Image("file:resource/image/background.png");
         initLevel();
+        playMusic(4);
         startGameLoop();
 
         canvas.setOnMouseMoved(e -> {
@@ -112,8 +112,14 @@ public class GameBoard extends Pane {
         canvas.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case P -> { // Pause/Resume
-                    if (status.isPlaying()) status.toPaused();
-                    else if (status.isPaused()) status.toPlaying();
+                    if (status.isPlaying()) {
+                        status.toPaused();
+                        stopMusic();
+                    }
+                    else if (status.isPaused()) {
+                        status.toPlaying();
+                        playMusic(4);
+                    }
                 }
                 case ENTER -> { // Bắt đầu / tiếp tục
                     if (status.isMenu()) {
@@ -132,6 +138,7 @@ public class GameBoard extends Pane {
                 case R -> { // Restart khi Game Over
                     if (status.isGameOver()) {
                         initLevel();
+                        playMusic(4);
                         status.toPlaying();
                     }
                 }
@@ -144,7 +151,6 @@ public class GameBoard extends Pane {
     }
 
     private void startGameLoop() {
-        playMusic(4);
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -164,6 +170,7 @@ public class GameBoard extends Pane {
 
         if (ball.isFellOut()) {
             status.toGameOver();
+            stopMusic();
             gameOver = true;
             return;
         }
@@ -250,15 +257,16 @@ public class GameBoard extends Pane {
     }
 
     Sound sound = new Sound();
+    Sound bgm = new Sound();
 
     public void playMusic(int i) {
-        sound.setFile(i);
-        sound.play();
-        sound.loop();
+        bgm.setFile(i);
+        bgm.play();
+        bgm.loop();
     }
 
     public void stopMusic() {
-        sound.stop();
+        bgm.stop();
     }
 
     public void playSE(int i) {

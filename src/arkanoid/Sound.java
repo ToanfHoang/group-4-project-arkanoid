@@ -14,6 +14,7 @@ public class Sound {
         soundURL[1] = getClass().getResource("/sound/bounceonpaddle.wav");
         soundURL[2] = getClass().getResource("/sound/tap.wav");
         soundURL[3] = getClass().getResource("/sound/fail.wav");
+        soundURL[4] = getClass().getResource("/sound/bgs.wav");
     }
     public void setFile(int i){
         try{
@@ -25,13 +26,13 @@ public class Sound {
         }
     }
     public void play(){
-
         clip.start();
-
     }
     public void stop(){
         clip.stop();
     }
 
-    // public void loop(){} loop am thanh background
+    public void loop(){
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+    }
 }

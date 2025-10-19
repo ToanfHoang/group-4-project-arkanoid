@@ -135,7 +135,8 @@ public class GameBoard extends Pane {
                         status.toPlaying();
                     }
                 }
-                default -> {}
+                default -> {
+                }
             }
         });
 
@@ -143,6 +144,7 @@ public class GameBoard extends Pane {
     }
 
     private void startGameLoop() {
+        playMusic(4);
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -248,16 +250,19 @@ public class GameBoard extends Pane {
     }
 
     Sound sound = new Sound();
-    public void playMusic(int i){
+
+    public void playMusic(int i) {
         sound.setFile(i);
         sound.play();
-    }
-    public void stopMusic(){
-        sound.stop();
-    }
-    public void playSE(int i){
-        sound.setFile(i);
-        sound.play();
+        sound.loop();
     }
 
+    public void stopMusic() {
+        sound.stop();
+    }
+
+    public void playSE(int i) {
+        sound.setFile(i);
+        sound.play();
+    }
 }

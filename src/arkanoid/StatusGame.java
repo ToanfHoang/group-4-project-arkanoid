@@ -93,10 +93,12 @@ public class StatusGame {
             gc.drawImage(btnExit, exitX, exitY, exitW, exitH);
         }
         else if (isPaused()) {
+            drawNeonText(gc, "PAUSE", w / 2, 140, Color.CYAN, 72);
             gc.drawImage(btnContinue, contX, contY, contW, contH);
             gc.drawImage(btnReplay, replayX, replayY, replayW, replayH);
         }
         else if (isGameOver()) {
+            drawNeonText(gc, "GAME OVER", w / 2, 140, Color.CYAN, 72);
             gc.drawImage(btnReplay, contX, contY, contW, contH);
             gc.drawImage(btnExit, replayX, replayY, replayW, replayH);
         }

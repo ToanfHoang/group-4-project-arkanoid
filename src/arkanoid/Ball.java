@@ -33,22 +33,19 @@ public class Ball extends MovableObject {
         // Xử lý va chạm với tường trái/phải
         if (x <= 0 || x + width >= canvasWidth) {
             dx = -dx;
-            sound.setFile(0);
-            sound.play();
+            playSE(0);
         }
 
         // Xử lý va chạm với tường trên
         if (y <= 0) {
             dy = -dy;
-            sound.setFile(0);
-            sound.play();
+            playSE(0);
         }
 
         // Xử lý khi bóng rơi xuống đáy
         if (y + height >= canvasHeight) {
             fellOut = true;
-            sound.setFile(3); // fail.wav
-            sound.play();// Đánh dấu bóng đã rơi ra ngoài
+            playSE(3);// Đánh dấu bóng đã rơi ra ngoài
         }
     }
 
@@ -56,6 +53,7 @@ public class Ball extends MovableObject {
     public void render(GraphicsContext gc) {
         gc.drawImage(image, x, y, width, height);
     }
+
     public boolean isFellOut() {
         return fellOut;
     }
@@ -67,8 +65,7 @@ public class Ball extends MovableObject {
                 x + width >= paddle.getX() &&
                 x <= paddle.getX() + paddle.getWidth() &&
                 dy > 0) { // Chỉ khi bóng đang đi xuống
-            sound.setFile(1); // fail.wav
-            sound.play();
+            playSE(1);
 
             // Đặt bóng lên trên paddle
             y = paddle.getY() - height;
@@ -96,10 +93,14 @@ public class Ball extends MovableObject {
     public double getSpeed() {
         return speed;
     }
+
     public void setSpeed(double speed) {
         this.speed = speed;
     }
-    public boolean isAttached() { return attached; }
+
+    public boolean isAttached() {
+        return attached;
+    }
 
     public void attachToPaddle(Paddle paddle) {
         attached = true;
@@ -121,4 +122,8 @@ public class Ball extends MovableObject {
         }
     }
 
+    public void playSE(int i) {
+        sound.setFile(i);
+        sound.play();
+    }
 }

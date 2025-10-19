@@ -28,6 +28,13 @@ public class GameBoard extends Pane {
     private AnimationTimer gameLoop;
     private boolean gameOver;
     private Image background;
+    private void resetBallAndPaddle() {
+        // Đưa paddle về giữa màn hình
+        paddle.setX((canvas.getWidth() - paddle.getWidth()) / 2, canvas.getWidth());
+
+        // Đặt bóng lên trên paddle
+        ball.attachToPaddle(paddle); // bóng dính paddle
+    }
 
     public GameBoard(int width, int height) {
         canvas = new Canvas(width, height);
@@ -49,11 +56,13 @@ public class GameBoard extends Pane {
             double mx = e.getX(), my = e.getY();
 
             if (status.isMenu()) {
-                if (status.isInsideStart(mx, my)) {
-                    status.triggerButtonEffect("START");
-                    status.toPlaying();
-                    ball.attachToPaddle(paddle);
-                } else if (status.isInsideExit(mx, my)) {
+                if (status.isInsidePlay(mx, my)) {
+                    status.triggerButtonEffect("PLAY");
+                    initLevel();            // khởi tạo lại màn chơi
+                    status.toPlaying();     // chuyển sang trạng thái chơi
+                    startGameLoop();        // bắt đầu game loop
+                }
+                else if (status.isInsideExit(mx, my)) {
                     status.triggerButtonEffect("EXIT");
                     System.exit(0);
                 }
@@ -63,29 +72,41 @@ public class GameBoard extends Pane {
             if (status.isPaused()) {
                 if (status.isInsideContinue(mx, my)) {
                     status.triggerButtonEffect("CONTINUE");
-                    status.toPlaying();
-                } else if (status.isInsideMenu(mx, my)) {
-                    status.triggerButtonEffect("MENU");
-                    status.toMenu();
+                    status.toPlaying();     // tiếp tục chơi
+                    startGameLoop();
+                }
+                else if (status.isInsideReplay(mx, my)) {
+                    status.triggerButtonEffect("REPLAY");
+
+                    initLevel();            // khởi tạo lại level hoàn chỉnh
+                    status.toPlaying();     // quay lại trạng thái chơi
+                    startGameLoop();        // khởi động lại vòng lặp
                 }
                 return;
             }
+
             if (status.isGameOver()) {
                 if (status.isInsideOverContinue(mx, my)) {
                     status.triggerButtonEffect("OVER_CONTINUE");
-                    initLevel();
-                    status.toPlaying();
-                } else if (status.isInsideOverMenu(mx, my)) {
+                    initLevel();            // khởi tạo lại màn chơi mới
+                    status.toPlaying();     // quay lại chơi
+                    startGameLoop();
+                }
+                else if (status.isInsideOverMenu(mx, my)) {
                     status.triggerButtonEffect("OVER_MENU");
-                    status.toMenu();
+                    status.toMenu();        // quay lại menu
                 }
                 return;
             }
 
             if (status.isPlaying() && e.getButton() == MouseButton.PRIMARY) {
-                ball.releaseFromPaddle();
+                // chỉ bắn bóng khi nó đang gắn với paddle
+                if (ball.isAttached()) {
+                    ball.releaseFromPaddle();
+                }
             }
         });
+
 
         canvas.setFocusTraversable(true);
         canvas.setOnKeyPressed(e -> {
@@ -94,9 +115,9 @@ public class GameBoard extends Pane {
                     if (status.isPlaying()) status.toPaused();
                     else if (status.isPaused()) status.toPlaying();
                 }
-                case ENTER, SPACE -> { // Bắt đầu / tiếp tục
+                case ENTER -> { // Bắt đầu / tiếp tục
                     if (status.isMenu()) {
-                        status.triggerButtonEffect("START");
+                        status.triggerButtonEffect("PLAY");
                         status.toPlaying();
                     } else if (status.isPaused()) {
                         status.triggerButtonEffect("CONTINUE");
@@ -192,6 +213,7 @@ public class GameBoard extends Pane {
     public void initLevel() {
         gameOver = false;
         paddle = new Paddle(250, 340, 100, 20);
+
         ball = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
         ball.attachToPaddle(paddle);
 

@@ -188,13 +188,11 @@ public class GameBoard extends Pane {
                 playSE(2);
                 if (brick.hitPoints <= 0) {
                     brick.hasCollided();
-                    // Giữ vận tốc hợp lý
-                    double speed = sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
-                    if (speed > 4.0) {
-                        double angle = Math.atan2(ball.dy, ball.dx);
-                        ball.dx = 4.0 * Math.cos(angle);
-                        ball.dy = 4.0 * Math.sin(angle);
-                    }
+
+                    ball.increaseSpeed();
+
+                    //kiem tra van toc
+                    System.out.println(ball.dx + ", " + ball.dy + " | Speed: " + ball.getSpeed());
                 }
                 handleBrickCollision(ball, brick);
                 break;
@@ -202,6 +200,7 @@ public class GameBoard extends Pane {
         }
     }
 
+    // Kiểm tra va chạm giữa bóng và gạch
     private boolean checkCollision(Ball ball, Brick brick) {
         return ball.getX() < brick.getX() + brick.getWidth() &&
                 ball.getX() + ball.getWidth() > brick.getX() &&
@@ -209,6 +208,7 @@ public class GameBoard extends Pane {
                 ball.getY() + ball.getHeight() > brick.getY();
     }
 
+    // Xử lý va chạm giữa bóng và gạch
     private void handleBrickCollision(Ball ball, Brick brick) {
         double overlapLeft = (ball.getX() + ball.getWidth()) - brick.getX();
         double overlapRight = (brick.getX() + brick.getWidth()) - ball.getX();

@@ -61,13 +61,11 @@ public class GameBoard extends Pane {
 
             if (status.isMenu()) {
                 if (status.isInsidePlay(mx, my)) {
-                    status.triggerButtonEffect("PLAY");
                     initLevel();            // khởi tạo lại màn chơi
                     status.toPlaying();     // chuyển sang trạng thái chơi
                     startGameLoop();        // bắt đầu game loop
                 }
                 else if (status.isInsideExit(mx, my)) {
-                    status.triggerButtonEffect("EXIT");
                     System.exit(0);
                 }
                 return;
@@ -75,13 +73,10 @@ public class GameBoard extends Pane {
 
             if (status.isPaused()) {
                 if (status.isInsideContinue(mx, my)) {
-                    status.triggerButtonEffect("CONTINUE");
                     status.toPlaying();     // tiếp tục chơi
                     startGameLoop();
                 }
                 else if (status.isInsideReplay(mx, my)) {
-                    status.triggerButtonEffect("REPLAY");
-
                     initLevel();            // khởi tạo lại level hoàn chỉnh
                     status.toPlaying();     // quay lại trạng thái chơi
                     startGameLoop();        // khởi động lại vòng lặp
@@ -90,15 +85,23 @@ public class GameBoard extends Pane {
             }
 
             if (status.isGameOver()) {
-                if (status.isInsideOverContinue(mx, my)) {
-                    status.triggerButtonEffect("OVER_CONTINUE");
-                    initLevel();            // khởi tạo lại màn chơi mới
-                    status.toPlaying();     // quay lại chơi
-                    startGameLoop();
+                if (status.isInsideReplayOver(mx, my)) {
+                    initLevel();           // tạo lại brick, ball, paddle
+                    status.toPlaying();    // quay lại chơi
                 }
-                else if (status.isInsideOverMenu(mx, my)) {
-                    status.triggerButtonEffect("OVER_MENU");
-                    status.toMenu();        // quay lại menu
+                else if (status.isInsideExitOver(mx, my)) {
+                    System.exit(0);        // thoát game
+                }
+                return;
+            }
+
+            if (status.isWin()) {
+                if (status.isInsideReplayWin(mx, my)) {
+                    initLevel();           // tạo lại brick, ball, paddle
+                    status.toPlaying();    // quay lại chơi
+                }
+                else if (status.isInsideExitWin(mx, my)) {
+                    System.exit(0);        // thoát game
                 }
                 return;
             }
@@ -124,29 +127,6 @@ public class GameBoard extends Pane {
                         status.toPlaying();
                         playMusic(4);
                     }
-                }
-                case ENTER -> { // Bắt đầu / tiếp tục
-                    if (status.isMenu()) {
-                        status.triggerButtonEffect("PLAY");
-                        status.toPlaying();
-                    } else if (status.isPaused()) {
-                        status.triggerButtonEffect("CONTINUE");
-                        status.toPlaying();
-                    } else if (status.isGameOver()) {
-                        status.triggerButtonEffect("OVER_CONTINUE");
-                        initLevel();
-                        status.toPlaying();
-                    }
-                }
-                case M, ESCAPE -> status.toMenu(); // Về menu
-                case R -> { // Restart khi Game Over
-                    playMusic(4);
-                    if (status.isGameOver()) {
-                        initLevel();
-                        status.toPlaying();
-                    }
-                }
-                default -> {
                 }
             }
         });
@@ -198,6 +178,20 @@ public class GameBoard extends Pane {
                 break;
             }
         }
+        // Nếu tất cả gạch đã bị phá -> thắng
+        boolean allDestroyed = true;
+        for (Brick brick : bricks) {
+            if (!brick.isDestroyed()) {
+                allDestroyed = false;
+                break;
+            }
+        }
+        if (allDestroyed) {
+            status.toWin();
+            if (gameLoop != null) gameLoop.stop();
+            return;
+        }
+
     }
 
     // Kiểm tra va chạm giữa bóng và gạch

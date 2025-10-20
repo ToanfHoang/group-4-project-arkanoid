@@ -9,7 +9,9 @@ public class Ball extends MovableObject {
     private final Image image;
     private final double canvasWidth;
     private final double canvasHeight;
-    private double speed;
+
+    private double currentSpeed = 0.5;
+
     private boolean attached = true; // Bóng ban đầu gắn vào paddle
     private boolean fellOut = false;
 
@@ -20,10 +22,10 @@ public class Ball extends MovableObject {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.image = new Image("file:resource/image/ball_1.png");
-        this.dx = 3;
-        this.dy = -3;
-    }
 
+        this.dx = currentSpeed * Math.sin(Math.toRadians(45));
+        this.dy = -currentSpeed * Math.cos(Math.toRadians(45));
+    }
 
     @Override
     public void update() {
@@ -81,29 +83,41 @@ public class Ball extends MovableObject {
             double ratio = Math.max(-1, Math.min(1, distanceFromCenter / (paddle.getWidth() / 2.0)));
 
             // Tính góc phản xạ
-            double maxAngle = Math.toRadians(75);
+            double maxAngle = Math.toRadians(65);
             double angle = ratio * maxAngle;
 
             // Đặt lại vận tốc với góc mới
-            speed = Math.sqrt(dx * dx + dy * dy);
-            dx = speed * Math.sin(angle);
-            dy = -speed * Math.cos(angle);
+            dx = currentSpeed * Math.sin(angle);
+            dy = -currentSpeed * Math.cos(angle);
         }
         return false;
     }
 
+    // Tăng tốc độ cơ bản - gọi khi phá gạch
+    public void increaseSpeed() {
+        currentSpeed *= 1.05;  // tăng speed
+
+        // Giới hạn tốc độ tối đa
+        if (currentSpeed > 3.0) {
+            currentSpeed = 3.0;
+        }
+
+        // Cập nhật lại dx, dy theo hướng hiện tại
+        double angle = Math.atan2(dy, dx);
+        dx = currentSpeed * Math.cos(angle);
+        dy = currentSpeed * Math.sin(angle);
+    }
+
     public double getSpeed() {
-        return speed;
+        return currentSpeed;  // ← Trả về speed chuẩn
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
+    // kiểm tra bóng có đang gắn vào paddle không
     public boolean isAttached() {
         return attached;
     }
 
+    // gắn bóng vào paddle
     public void attachToPaddle(Paddle paddle) {
         attached = true;
         // đặt bóng ngay trên paddle, chính giữa
@@ -113,15 +127,21 @@ public class Ball extends MovableObject {
         this.dy = 0;
     }
 
+    // giải phóng bóng khỏi paddle
     public void releaseFromPaddle() {
         if (attached) {
             attached = false;
             // bắn lên trên một góc nhẹ
-            double speed = 1;
+
             double angle = Math.toRadians(-60 + Math.random() * 120); // góc ngẫu nhiên
-            this.dx = speed * Math.sin(angle);
-            this.dy = -Math.abs(speed * Math.cos(angle));
+            this.dx = currentSpeed * Math.sin(angle);
+            this.dy = -Math.abs(currentSpeed * Math.cos(angle));
         }
+    }
+
+    // Reset speed về ban đầu khi bắt đầu level mới
+    public void resetSpeed() {
+        currentSpeed = 1.0;
     }
 
     public void playSE(int i) {

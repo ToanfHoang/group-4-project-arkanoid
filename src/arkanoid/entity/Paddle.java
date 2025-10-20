@@ -1,5 +1,6 @@
-package arkanoid;
+package arkanoid.entity;
 
+import arkanoid.core.MovableObject;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 

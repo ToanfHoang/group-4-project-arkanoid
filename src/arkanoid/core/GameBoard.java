@@ -1,5 +1,9 @@
-package arkanoid;
+package arkanoid.core;
 
+import arkanoid.entity.Ball;
+import arkanoid.entity.Brick;
+import arkanoid.entity.Paddle;
+import arkanoid.sound.Sound;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -136,9 +140,9 @@ public class GameBoard extends Pane {
                 }
                 case M, ESCAPE -> status.toMenu(); // Về menu
                 case R -> { // Restart khi Game Over
+                    playMusic(4);
                     if (status.isGameOver()) {
                         initLevel();
-                        playMusic(4);
                         status.toPlaying();
                     }
                 }

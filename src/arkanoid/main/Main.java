@@ -1,5 +1,6 @@
-package arkanoid;
+package arkanoid.main;
 
+import arkanoid.core.GameBoard;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

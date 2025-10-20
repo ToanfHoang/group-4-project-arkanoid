@@ -1,4 +1,4 @@
-package arkanoid;
+package arkanoid.entity;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

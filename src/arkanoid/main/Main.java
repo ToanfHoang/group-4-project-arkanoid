@@ -12,7 +12,7 @@ import javafx.stage.Stage;
  * hiển thị bảng trò chơi trong cửa sổ
  * gọi phương thức renderAll để vẽ tất cả các đối tượng trong bảng trò chơi
  */
-public class    Main extends Application {
+public class Main extends Application {
 
     private final int WIDTH = 600;
     private final int HEIGHT = 400;

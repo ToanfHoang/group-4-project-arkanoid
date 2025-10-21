@@ -5,8 +5,10 @@ import arkanoid.sound.Sound;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+import java.util.TimerTask;
+
 public class Ball extends MovableObject {
-    private final Image image;
+    private Image image;
     private final double canvasWidth;
     private final double canvasHeight;
 
@@ -16,20 +18,34 @@ public class Ball extends MovableObject {
     private boolean fellOut = false;
 
     private final Sound sound = new Sound();
+    public boolean onFire = false;
+    private int fireSec = 0;
+    private Image fireballImage;
+    private java.util.Timer timer = new java.util.Timer();
 
     public Ball(double x, double y, double radius, double canvasWidth, double canvasHeight) {
         super(x, y, radius * 2, radius * 2);
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.image = new Image("file:resource/image/ball_1.png");
+        this.fireballImage = new Image("file:resource/image/FireBall.png");
 
         this.dx = currentSpeed * Math.sin(Math.toRadians(45));
         this.dy = -currentSpeed * Math.cos(Math.toRadians(45));
+
+        //bong mới
+        this.attached = false;
+        this.currentSpeed = 1.0;
+
+        // Hướng ngẫu nhiên
+        double angle = Math.toRadians(-60 + Math.random() * 120);
+        this.dx = currentSpeed * Math.sin(angle);
+        this.dy = -Math.abs(currentSpeed * Math.cos(angle));
     }
 
     @Override
     public void update() {
-        if (attached) {
+        if (attached || fellOut) {
             return; // Nếu bóng đang gắn vào paddle, không di chuyển
         }
         move();
@@ -93,6 +109,28 @@ public class Ball extends MovableObject {
         return false;
     }
 
+    public void stopSound() {
+        if (sound != null) {
+            sound.stop();
+        }
+    }
+    public void reset() {
+        fellOut = false;
+        attached = true;
+        currentSpeed = 1.0;
+        onFire = false;
+        stopSound();
+
+        // Reset hình ảnh về bình thường
+        this.image = new Image("file:resource/image/ball_1.png");
+
+        // Reset timer nếu có
+        if (timer != null) {
+            timer.cancel();
+            timer = new java.util.Timer();
+        }
+    }
+
     // Tăng tốc độ cơ bản - gọi khi phá gạch
     public void increaseSpeed() {
         currentSpeed *= 1.05;  // tăng speed
@@ -147,5 +185,24 @@ public class Ball extends MovableObject {
     public void playSE(int i) {
         sound.setFile(i);
         sound.play();
+    }
+
+    public void fireBall(int seconds){
+        if(!onFire){
+            fireSec = seconds;
+            onFire = true;
+            this.image = fireballImage; // Đổi hình ảnh
+            timer.schedule(new RemindTask(), seconds * 1000);
+        }
+    }
+    class RemindTask extends TimerTask {
+        public void run() {
+            onFire = false;
+            image = new Image("file:resource/image/ball_1.png"); // Đổi lại hình ảnh bình thường
+        }
+    }
+
+    public boolean isOnFire() {
+        return onFire;
     }
 }

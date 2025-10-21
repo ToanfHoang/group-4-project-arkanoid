@@ -65,7 +65,6 @@ public class GameBoard extends Pane {
 
             if (status.isMenu()) {
                 if (status.isInsidePlay(mx, my)) {
-                    status.triggerButtonEffect("PLAY");
                     initLevel();            // khởi tạo lại màn chơi
                     status.toPlaying();     // chuyển sang trạng thái chơi
                     startGameLoop();        // bắt đầu game loop
@@ -78,7 +77,6 @@ public class GameBoard extends Pane {
 
             if (status.isPaused()) {
                 if (status.isInsideContinue(mx, my)) {
-                    status.triggerButtonEffect("CONTINUE");
                     status.toPlaying();     // tiếp tục chơi
                     startGameLoop();
                 } else if (status.isInsideReplay(mx, my)) {
@@ -124,29 +122,6 @@ public class GameBoard extends Pane {
                         status.toPlaying();
                         playMusic(4);
                     }
-                }
-                case ENTER -> { // Bắt đầu / tiếp tục
-                    if (status.isMenu()) {
-                        status.triggerButtonEffect("PLAY");
-                        status.toPlaying();
-                    } else if (status.isPaused()) {
-                        status.triggerButtonEffect("CONTINUE");
-                        status.toPlaying();
-                    } else if (status.isGameOver()) {
-                        status.triggerButtonEffect("OVER_CONTINUE");
-                        initLevel();
-                        status.toPlaying();
-                    }
-                }
-                case M, ESCAPE -> status.toMenu(); // Về menu
-                case R -> { // Restart khi Game Over
-                    playMusic(4);
-                    if (status.isGameOver()) {
-                        initLevel();
-                        status.toPlaying();
-                    }
-                }
-                default -> {
                 }
             }
         });
@@ -221,6 +196,20 @@ public class GameBoard extends Pane {
                 break;
             }
         }
+        // Nếu tất cả gạch đã bị phá -> thắng
+        boolean allDestroyed = true;
+        for (Brick brick : bricks) {
+            if (!brick.isDestroyed()) {
+                allDestroyed = false;
+                break;
+            }
+        }
+        if (allDestroyed) {
+            status.toWin();
+            if (gameLoop != null) gameLoop.stop();
+            return;
+        }
+
     }
 
     private void updatePowerup() {

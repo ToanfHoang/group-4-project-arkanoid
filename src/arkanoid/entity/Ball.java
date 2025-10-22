@@ -65,7 +65,7 @@ public class Ball extends MovableObject {
         // Xử lý khi bóng rơi xuống đáy
         if (y + height >= canvasHeight) {
             fellOut = true;
-            playSE(3);// Đánh dấu bóng đã rơi ra ngoài
+            // Đánh dấu bóng đã rơi ra ngoài
         }
     }
 

@@ -76,6 +76,7 @@ public class GameBoard extends Pane {
 
             if (status.isPaused()) {
                 if (status.isInsideContinue(mx, my)) {
+                    playMusic(4);
                     status.toPlaying();     // tiếp tục chơi
                     startGameLoop();
                 }
@@ -100,6 +101,7 @@ public class GameBoard extends Pane {
 
             if (status.isWin()) {
                 if (status.isInsideReplayWin(mx, my)) {
+                    playMusic(4);
                     initLevel();           // tạo lại brick, ball, paddle
                     status.toPlaying();    // quay lại chơi
                 }
@@ -173,6 +175,7 @@ public class GameBoard extends Pane {
         balls.removeAll(ballsToRemove);
 
         if (mainBall.isFellOut() && balls.isEmpty()) {
+            playSE(3);
             status.toGameOver();
             stopMusic();
             gameOver = true;
@@ -220,6 +223,8 @@ public class GameBoard extends Pane {
             }
         }
         if (allDestroyed) {
+            playSE(5);
+            bgm.stop();
             status.toWin();
             if (gameLoop != null) gameLoop.stop();
             return;

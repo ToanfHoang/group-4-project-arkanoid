@@ -9,36 +9,34 @@ import javafx.scene.image.Image;
 
 public class StatusGame {
 
-    private Image allBackground = new Image("file:resource/image/all_background.png");
+    public enum GameState { MENU, PLAYING, PAUSED, GAME_OVER, WIN }
+
+    private Image menuBackground = new Image("file:resource/image/menu_background.png");
+    private Image pauseBackground = new Image("file:resource/image/pause_background.png");
+    private Image gameOverBackground = new Image("file:resource/image/gameover_background.png");
     private Image btnPlay = new Image("file:resource/image/play.png");
     private Image btnContinue = new Image("file:resource/image/continue.png");
     private Image btnReplay = new Image("file:resource/image/replay.png");
     private Image btnExit = new Image("file:resource/image/exit.png");
+    private Image WinGame  = new Image("file:resource/image/win_game.png");
 
-    public void triggerButtonEffect(String overContinue) {
-    }
-
-    public boolean isInsideOverContinue(double mx, double my) {
-        return false;
-    }
-
-    public boolean isInsideOverMenu(double mx, double my) {
-        return false;
-    }
-
-    public enum GameState { MENU, PLAYING, PAUSED, GAME_OVER,  }
     private GameState state = GameState.MENU;
 
     private long flashTime = 0;
     private String activeButton = "";
     private String hoverButton = "";
 
-    private final double playX = 220, playY = 220, playW = 160, playH = 50;
-    private final double exitX  = 220, exitY  = 290, exitW  = 160, exitH  = 50;
+    private final double playX = 220, playY = 220, playW = 140, playH = 50;
+    private final double exitX  = 220, exitY  = 290, exitW  = 140, exitH  = 50;
 
-    private final double contX = 220, contY = 200, contW = 160, contH = 50;
-    private final double replayX = 220, replayY = 270, replayW = 160, replayH = 50;
-    private final double menuX = 220, menuY = 270, menuW = 160, menuH = 50;
+    private final double contX = 220, contY = 200, contW = 140, contH = 50;
+    private final double replayX = 220, replayY = 270, replayW = 140, replayH = 50;
+
+    private final double replayOverX = 220, replayOverY = 230, replayOverW = 140, replayOverH = 50;
+    private final double exitOverX = 220, exitOverY = 300, exitOverW = 140, exitOverH = 50;
+
+    private final double replayWinX = 220, replayWinY = 230, replayWinW = 140, replayWinH = 50;
+    private final double exitWinX = 220, exitWinY = 300, exitWinW = 140, exitWinH = 50;
 
     public boolean isInsidePlay(double x, double y) {
         return x >= playX && x <= playX + playW && y >= playY && y <= playY + playH;
@@ -52,16 +50,32 @@ public class StatusGame {
     public boolean isInsideReplay(double x, double y) {
         return x >= replayX && x <= replayX + replayW && y >= replayY && y <= replayY + replayH;
     }
+    public boolean isInsideReplayOver(double x, double y) {
+        return x >= replayOverX && x <= replayOverX + replayOverW && y >= replayOverY && y <= replayOverY + replayOverH;
+    }
+
+    public boolean isInsideExitOver(double x, double y) {
+        return x >= exitOverX && x <= exitOverX + exitOverW && y >= exitOverY && y <= exitOverY + exitOverH;
+    }
+
+    public boolean isInsideReplayWin(double x, double y) {
+        return x >= replayWinX && x <= replayWinX + replayWinW && y >= replayWinY && y <= replayWinY + replayWinH;
+    }
+
+    public boolean isInsideExitWin(double x, double y) {
+        return x >= exitWinX && x <= exitWinX + exitWinW && y >= exitWinY && y <= exitWinY + exitWinH;
+    }
 
     public boolean isMenu()     { return state == GameState.MENU; }
     public boolean isPlaying()  { return state == GameState.PLAYING; }
     public boolean isPaused()   { return state == GameState.PAUSED; }
     public boolean isGameOver() { return state == GameState.GAME_OVER; }
+    public boolean isWin()      { return state == GameState.WIN; }
 
-    public void toMenu()     { state = GameState.MENU; }
     public void toPlaying()  { state = GameState.PLAYING; }
     public void toPaused()   { state = GameState.PAUSED; }
     public void toGameOver() { state = GameState.GAME_OVER; }
+    public void toWin()      { state = GameState.WIN; }
 
     public void triggerButton(String name) {
         activeButton = name;
@@ -87,51 +101,27 @@ public class StatusGame {
         };
         gc.setFill(new LinearGradient(0, 0, 0, h, false, CycleMethod.NO_CYCLE, stops));
         gc.fillRect(0, 0, w, h);
-        gc.drawImage(allBackground, 0, 0, w, h);
+
         if (isMenu()) {
-            drawNeonText(gc, "ARKANOID", w / 2, 140, Color.CYAN, 72);
+            gc.drawImage(menuBackground, 0, 0, w, h);
             gc.drawImage(btnPlay, playX, playY, playW, playH);
             gc.drawImage(btnExit, exitX, exitY, exitW, exitH);
         }
         else if (isPaused()) {
-            drawNeonText(gc, "PAUSE", w / 2, 140, Color.CYAN, 72);
+            gc.drawImage(pauseBackground, 0, 0, w, h);
             gc.drawImage(btnContinue, contX, contY, contW, contH);
             gc.drawImage(btnReplay, replayX, replayY, replayW, replayH);
         }
         else if (isGameOver()) {
-            drawNeonText(gc, "GAME OVER", w / 2, 140, Color.CYAN, 72);
-            gc.drawImage(btnReplay, contX, contY, contW, contH);
-            gc.drawImage(btnExit, replayX, replayY, replayW, replayH);
+            gc.drawImage(gameOverBackground, 0,0, w, h);
+            gc.drawImage(btnReplay, replayOverX, replayOverY, replayOverW, replayOverH);
+            gc.drawImage(btnExit, exitOverX, exitOverY, exitOverW, exitOverH);
         }
-
-        // Hiệu ứng sáng click
-        if (System.currentTimeMillis() - flashTime < 150) {
-            gc.setGlobalAlpha(0.6);
-            gc.setFill(Color.AQUA);
-            switch (activeButton) {
-                case "PLAY" -> gc.fillRoundRect(playX, playY, playW, playH, 10, 10);
-                case "EXIT" -> gc.fillRoundRect(exitX, exitY, exitW, exitH, 10, 10);
-                case "CONTINUE", "RETRY" -> gc.fillRoundRect(contX, contY, contW, contH, 10, 10);
-                case "REPLAY" -> gc.fillRoundRect(replayX, replayY, replayW, replayH, 10, 10);
-            }
-            gc.setGlobalAlpha(1.0);
+        else if (isWin()) {
+            gc.drawImage(WinGame, 0,0, w, h);
+            gc.drawImage(btnReplay, replayWinX, replayWinY, replayWinW, replayWinH);
+            gc.drawImage(btnExit, exitWinX, exitWinY, exitWinW, exitWinH);
         }
-
-    }
-
-    private void drawButton(GraphicsContext gc, String label, double x, double y, double w, double h) {
-        boolean isHover = label.equals(hoverButton);
-        Color neon = Color.CYAN.interpolate(Color.WHITE, isHover ? 0.4 : 0.0);
-
-        gc.setLineWidth(3);
-        gc.setStroke(neon);
-        gc.setFill(Color.rgb(0, 255, 255, isHover ? 0.25 : 0.08));
-        gc.fillRoundRect(x, y, w, h, 12, 12);
-        gc.strokeRoundRect(x, y, w, h, 12, 12);
-
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Consolas", 20));
-        drawCenter(gc, w, x, y + h / 1.6, label);
     }
 
     private void drawNeonText(GraphicsContext gc, String text, double centerX, double y, Color color, int size) {

@@ -23,9 +23,11 @@ public class GameBoard extends Pane {
     private final GraphicsContext gc;
 
     private Paddle paddle;
-    private Ball ball;
+    private Ball mainBall;
+    private final List<Ball> balls = new ArrayList<>(); //danh sach bong
     private final List<Brick> bricks = new ArrayList<>();
     private final StatusGame status = new StatusGame();
+    private final List<Powerup> powerups = new ArrayList<>();
 
     private AnimationTimer gameLoop;
     private boolean gameOver;
@@ -38,7 +40,7 @@ public class GameBoard extends Pane {
         paddle.setX((canvas.getWidth() - paddle.getWidth()) / 2, canvas.getWidth());
 
         // Đặt bóng lên trên paddle
-        ball.attachToPaddle(paddle); // bóng dính paddle
+        mainBall.attachToPaddle(paddle); // bóng dính paddle
     }
 
     public GameBoard(int width, int height) {
@@ -54,7 +56,7 @@ public class GameBoard extends Pane {
             if (!status.isPlaying()) return; // Chỉ di chuyển khi đang chơi
             double mouseX = e.getX();
             paddle.setX(mouseX - paddle.getWidth() / 2, canvas.getWidth());
-            if (ball.isAttached()) ball.attachToPaddle(paddle);
+            if (mainBall.isAttached()) mainBall.attachToPaddle(paddle);
         });
 
         canvas.setOnMouseClicked(e -> {
@@ -62,13 +64,11 @@ public class GameBoard extends Pane {
 
             if (status.isMenu()) {
                 if (status.isInsidePlay(mx, my)) {
-                    status.triggerButtonEffect("PLAY");
                     initLevel();            // khởi tạo lại màn chơi
                     status.toPlaying();     // chuyển sang trạng thái chơi
                     startGameLoop();        // bắt đầu game loop
                 }
                 else if (status.isInsideExit(mx, my)) {
-                    status.triggerButtonEffect("EXIT");
                     System.exit(0);
                 }
                 return;
@@ -76,13 +76,11 @@ public class GameBoard extends Pane {
 
             if (status.isPaused()) {
                 if (status.isInsideContinue(mx, my)) {
-                    status.triggerButtonEffect("CONTINUE");
+                    playMusic(4);
                     status.toPlaying();     // tiếp tục chơi
                     startGameLoop();
                 }
                 else if (status.isInsideReplay(mx, my)) {
-                    status.triggerButtonEffect("REPLAY");
-
                     initLevel();            // khởi tạo lại level hoàn chỉnh
                     status.toPlaying();     // quay lại trạng thái chơi
                     startGameLoop();        // khởi động lại vòng lặp
@@ -91,23 +89,32 @@ public class GameBoard extends Pane {
             }
 
             if (status.isGameOver()) {
-                if (status.isInsideOverContinue(mx, my)) {
-                    status.triggerButtonEffect("OVER_CONTINUE");
-                    initLevel();            // khởi tạo lại màn chơi mới
-                    status.toPlaying();     // quay lại chơi
-                    startGameLoop();
+                if (status.isInsideReplayOver(mx, my)) {
+                    initLevel();           // tạo lại brick, ball, paddle
+                    status.toPlaying();    // quay lại chơi
                 }
-                else if (status.isInsideOverMenu(mx, my)) {
-                    status.triggerButtonEffect("OVER_MENU");
-                    status.toMenu();        // quay lại menu
+                else if (status.isInsideExitOver(mx, my)) {
+                    System.exit(0);        // thoát game
+                }
+                return;
+            }
+
+            if (status.isWin()) {
+                if (status.isInsideReplayWin(mx, my)) {
+                    playMusic(4);
+                    initLevel();           // tạo lại brick, ball, paddle
+                    status.toPlaying();    // quay lại chơi
+                }
+                else if (status.isInsideExitWin(mx, my)) {
+                    System.exit(0);        // thoát game
                 }
                 return;
             }
 
             if (status.isPlaying() && e.getButton() == MouseButton.PRIMARY) {
                 // chỉ bắn bóng khi nó đang gắn với paddle
-                if (ball.isAttached()) {
-                    ball.releaseFromPaddle();
+                if (mainBall.isAttached()) {
+                    mainBall.releaseFromPaddle();
                 }
             }
         });
@@ -125,29 +132,6 @@ public class GameBoard extends Pane {
                         status.toPlaying();
                         playMusic(4);
                     }
-                }
-                case ENTER -> { // Bắt đầu / tiếp tục
-                    if (status.isMenu()) {
-                        status.triggerButtonEffect("PLAY");
-                        status.toPlaying();
-                    } else if (status.isPaused()) {
-                        status.triggerButtonEffect("CONTINUE");
-                        status.toPlaying();
-                    } else if (status.isGameOver()) {
-                        status.triggerButtonEffect("OVER_CONTINUE");
-                        initLevel();
-                        status.toPlaying();
-                    }
-                }
-                case M, ESCAPE -> status.toMenu(); // Về menu
-                case R -> { // Restart khi Game Over
-                    playMusic(4);
-                    if (status.isGameOver()) {
-                        initLevel();
-                        status.toPlaying();
-                    }
-                }
-                default -> {
                 }
             }
         });
@@ -167,11 +151,28 @@ public class GameBoard extends Pane {
     }
 
     private void update() {
-        // Không update nếu không chơi
         if (!status.isPlaying()) return;
         if (gameOver) return;
 
-        ball.update();
+        if (!mainBall.isFellOut()) {
+            mainBall.update();
+            mainBall.checkPaddleCollision(paddle);
+            checkBrickCollisions(mainBall);
+        }
+        updatePowerup();
+        List<Ball> ballsToRemove = new ArrayList<>();
+        for (Ball ball : balls) {
+            ball.update();
+
+            // Kiểm tra nếu bóng phụ rơi ra ngoài
+            if (ball.isFellOut()) {
+                ballsToRemove.add(ball);
+            } else {
+                ball.checkPaddleCollision(paddle);
+                checkBrickCollisions(ball);
+            }
+        }
+        balls.removeAll(ballsToRemove);
 
         if (ball.isFellOut()) {
 
@@ -189,8 +190,14 @@ public class GameBoard extends Pane {
 
         }
 
-        ball.checkPaddleCollision(paddle);
+        mainBall.checkPaddleCollision(paddle);
+        checkBrickCollisions(mainBall);
+    }
 
+    private void checkBrickCollisions(Ball ball) {
+        if (ball.isFellOut()) {
+            return;
+        }
         // Va chạm gạch
         for (Brick brick : bricks) {
             if (!brick.isDestroyed() && checkCollision(ball, brick)) {
@@ -209,6 +216,87 @@ public class GameBoard extends Pane {
                 break;
             }
         }
+        // Nếu tất cả gạch đã bị phá -> thắng
+        boolean allDestroyed = true;
+        for (Brick brick : bricks) {
+            if (!brick.isDestroyed()) {
+                allDestroyed = false;
+                break;
+            }
+        }
+        if (allDestroyed) {
+            playSE(5);
+            bgm.stop();
+            status.toWin();
+            if (gameLoop != null) gameLoop.stop();
+            return;
+        }
+
+    }
+
+    private void updatePowerup() {
+        List<Powerup> toRemove = new ArrayList<>();
+
+        for (Powerup powerup : powerups) {
+            powerup.update();
+
+            // va cham voi paddle
+            if (checkPowerupPaddleCollision(powerup, paddle)) {
+                applyPowerupEffect(powerup.powerup);
+                toRemove.add(powerup);
+                continue;
+            }
+            if (powerup.remove || powerup.getY() > canvas.getHeight()) {
+                toRemove.add(powerup);
+            }
+        }
+        powerups.removeAll(toRemove);
+    }
+
+    private boolean checkPowerupPaddleCollision(Powerup powerup, Paddle paddle) {
+        return powerup.getX() < paddle.getX() + paddle.getWidth() &&
+                powerup.getX() + powerup.getWidth() > paddle.getX() &&
+                powerup.getY() < paddle.getY() + paddle.getHeight() &&
+                powerup.getY() + powerup.getHeight() > paddle.getY();
+    }
+
+    private void applyPowerupEffect(int powerupType) {
+        switch (powerupType) {
+            case 1: // Multi-ball
+                createExtraBalls();
+                break;
+            case 2: // Growth - paddle
+                paddle.setWidth(paddle.getWidth() + 15);
+                break;
+            case 3: // Fireball
+                activateFireball();
+                break;
+        }
+    }
+
+    private void createExtraBalls() {
+        int ballToCreate = 2;
+        for (int i = 0; i < ballToCreate; i++) {
+            Ball newBall = new Ball(
+                    paddle.getX() + paddle.getWidth() / 2 - 10,
+                    paddle.getY() - 20,
+                    10, canvas.getWidth(), canvas.getHeight()
+            );
+            // Set bóng không attached ngay từ đầu
+            newBall.releaseFromPaddle();
+
+            // Set hướng ngẫu nhiên khác nhau cho mỗi bóng
+            double angle = Math.toRadians(-60 + Math.random() * 120);
+            newBall.setDx(newBall.getSpeed() * Math.sin(angle));
+            newBall.setDy(-Math.abs(newBall.getSpeed() * Math.cos(angle)));
+            balls.add(newBall);
+        }
+        System.out.println("Multi-ball activated!");
+    }
+
+    private void activateFireball() {
+        mainBall.fireBall(4);
+        System.out.println("Fireball activated!");
     }
 
     // Kiểm tra va chạm giữa bóng và gạch
@@ -240,9 +328,10 @@ public class GameBoard extends Pane {
         stats.reset();
         paddle = new Paddle(250, 340, 100, 20);
 
-        ball = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
-        ball.attachToPaddle(paddle);
+        mainBall = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
+        mainBall.attachToPaddle(paddle);
 
+        balls.clear();
         bricks.clear();
 
         for (int i = 0; i < 5; i++) {
@@ -304,9 +393,21 @@ public class GameBoard extends Pane {
             }
         }
 
+        // Vẽ powerups
+        for (Powerup powerup : powerups) {
+            powerup.render(gc);
+        }
+
         // Vẽ paddle và bóng
         paddle.render(gc);
-        ball.render(gc);
+        if (!mainBall.isFellOut()) {
+            mainBall.render(gc);
+        }
+
+        // Vẽ tất cả các bóng phụ
+        for (Ball ball : balls) {
+            ball.render(gc);
+        }
 
         // Vẽ thông tin điểm số và mạng
         if (status.isPlaying()) {

@@ -12,6 +12,9 @@ public class Brick  {
     protected int hitPoints ;
     protected  Color color;
 
+    private Random rand;
+    private int powerup = 0;
+
     // constructor
     public Brick(double x, double y, double width, double height) {
         this.x = x;

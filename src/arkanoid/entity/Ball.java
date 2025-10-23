@@ -136,8 +136,8 @@ public class Ball extends MovableObject {
         currentSpeed *= 1.05;  // tăng speed
 
         // Giới hạn tốc độ tối đa
-        if (currentSpeed > 2.0) {
-            currentSpeed = 2.0;
+        if (currentSpeed > 3.0) {
+            currentSpeed = 3.0;
         }
 
         // Cập nhật lại dx, dy theo hướng hiện tại

@@ -1,8 +1,6 @@
 package arkanoid.core;
 
-import arkanoid.entity.Ball;
-import arkanoid.entity.Brick;
-import arkanoid.entity.Paddle;
+import arkanoid.entity.*;
 import arkanoid.sound.Sound;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -32,6 +30,9 @@ public class GameBoard extends Pane {
     private AnimationTimer gameLoop;
     private boolean gameOver;
     private Image background;
+
+    private GameStats stats = new GameStats();
+
     private void resetBallAndPaddle() {
         // Đưa paddle về giữa màn hình
         paddle.setX((canvas.getWidth() - paddle.getWidth()) / 2, canvas.getWidth());
@@ -173,10 +174,19 @@ public class GameBoard extends Pane {
         ball.update();
 
         if (ball.isFellOut()) {
-            status.toGameOver();
-            stopMusic();
-            gameOver = true;
-            return;
+
+            stats.loseLife();
+            if (!stats.hasLivesLeft()) {
+                status.toGameOver();
+                stopMusic();
+                gameOver = true;
+                return;
+            }
+            else {
+                resetBallAndPaddle();
+                ball.resetSpeed();
+            }
+
         }
 
         ball.checkPaddleCollision(paddle);
@@ -184,16 +194,17 @@ public class GameBoard extends Pane {
         // Va chạm gạch
         for (Brick brick : bricks) {
             if (!brick.isDestroyed() && checkCollision(ball, brick)) {
-                brick.hitPoints--;
+
                 playSE(2);
-                if (brick.hitPoints <= 0) {
-                    brick.hasCollided();
 
-                    ball.increaseSpeed();
-
-                    //kiem tra van toc
-                    System.out.println(ball.dx + ", " + ball.dy + " | Speed: " + ball.getSpeed());
+                brick.hasCollided(ball);
+                if( brick.isDestroyed()) {
+                    stats.addScore(brick);
                 }
+
+                //kiem tra van toc
+                System.out.println(ball.dx + ", " + ball.dy + " | Speed: " + ball.getSpeed());
+
                 handleBrickCollision(ball, brick);
                 break;
             }
@@ -226,15 +237,36 @@ public class GameBoard extends Pane {
 
     public void initLevel() {
         gameOver = false;
+        stats.reset();
         paddle = new Paddle(250, 340, 100, 20);
 
         ball = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
         ball.attachToPaddle(paddle);
 
         bricks.clear();
-        for (int i = 0; i < 7; i++) {
+
+        for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 10; j++) {
-                bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 30));
+                double x = 50 + j * 50;
+                double y = 40 + i * 30;
+
+                switch (i) {
+                    case 0:
+                        bricks.add(new UnbreakableBrick(x, y, 50, 30)); // Normal
+                        break;
+                    case 1:
+                        bricks.add(new StrongBrick(x, y, 50, 30));
+                        break;
+                    case 2:
+                        bricks.add(new Brick(x, y, 50, 30));
+                        break;
+                    case 3:
+                        bricks.add(new ExplosiveBrick(x, y, 50, 30, bricks));
+                        break;
+                    case 4:
+                        bricks.add(new DropItemBrick(x, y, 50, 30));
+                        break;
+                }
             }
         }
     }
@@ -251,10 +283,35 @@ public class GameBoard extends Pane {
 
         // Vẽ gạch
         for (Brick brick : bricks) brick.render(gc);
+        for (Brick StrongBrick : bricks) {
+            if (StrongBrick instanceof StrongBrick) {
+                StrongBrick.render(gc);
+            }
+        }
+        for(Brick ExplosiveBrick : bricks) {
+            if (ExplosiveBrick instanceof ExplosiveBrick) {
+                ExplosiveBrick.render(gc);
+            }
+        }
+        for(Brick DropItemBrick : bricks) {
+            if (DropItemBrick instanceof DropItemBrick) {
+                DropItemBrick.render(gc);
+            }
+        }
+        for (Brick UnbreakableBrick : bricks) {
+            if (UnbreakableBrick instanceof UnbreakableBrick) {
+                UnbreakableBrick.render(gc);
+            }
+        }
 
         // Vẽ paddle và bóng
         paddle.render(gc);
         ball.render(gc);
+
+        // Vẽ thông tin điểm số và mạng
+        if (status.isPlaying()) {
+            stats.render(gc, canvas.getWidth(), canvas.getHeight());
+        }
 
         // Vẽ lớp overlay (menu, pause, game over)
         status.renderOverlay(gc, canvas.getWidth(), canvas.getHeight());

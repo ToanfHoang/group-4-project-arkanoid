@@ -68,6 +68,7 @@ public class StatusGame {
         flashTime = System.currentTimeMillis();
     }
 
+
     public void setHover(String name) {
         hoverButton = name;
     }

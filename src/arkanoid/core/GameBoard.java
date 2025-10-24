@@ -30,6 +30,7 @@ public class GameBoard extends Pane {
     private final List<Ball> balls = new ArrayList<>(); //danh sach bong
     private final List<Brick> bricks = new ArrayList<>();
     private final StatusGame status = new StatusGame();
+    private final GameStats gameStats = new GameStats();
     private final List<Powerup> powerups = new ArrayList<>();
 
     private AnimationTimer gameLoop;
@@ -38,7 +39,7 @@ public class GameBoard extends Pane {
     private void resetBallAndPaddle() {
         // Đưa paddle về giữa màn hình
         paddle.setX((canvas.getWidth() - paddle.getWidth()) / 2, canvas.getWidth());
-
+        mainBall.reset();
         // Đặt bóng lên trên paddle
         mainBall.attachToPaddle(paddle); // bóng dính paddle
     }
@@ -175,15 +176,23 @@ public class GameBoard extends Pane {
         balls.removeAll(ballsToRemove);
 
         if (mainBall.isFellOut() && balls.isEmpty()) {
-            playSE(3);
-            status.toGameOver();
-            stopMusic();
-            gameOver = true;
-            return;
+            gameStats.loseLife();
+
+            if(!gameStats.hasLivesLeft()) {
+
+                playSE(3);
+                status.toGameOver();
+                stopMusic();
+                gameOver = true;
+                return;
+            }
+            else {
+                resetBallAndPaddle();
+            }
         }
 
-        mainBall.checkPaddleCollision(paddle);
-        checkBrickCollisions(mainBall);
+        //mainBall.checkPaddleCollision(paddle);
+        //checkBrickCollisions(mainBall);
     }
 
     private void checkBrickCollisions(Ball ball) {
@@ -195,10 +204,16 @@ public class GameBoard extends Pane {
             if (!brick.isDestroyed() && checkCollision(ball, brick)) {
                 if (ball.isOnFire()) {
                     brick.destroyed();
-                    ball.increaseSpeed();
+                    gameStats.addScore(brick);
+                    //ball.increaseSpeed();
                     playSE(2);
                 } else {
                     brick.hasCollided();
+
+                    if (brick.isDestroyed()) {
+                        gameStats.addScore(brick);
+                    }
+
                     ball.increaseSpeed();
                     playSE(2);
                     handleBrickCollision(ball, brick);
@@ -293,7 +308,7 @@ public class GameBoard extends Pane {
     }
 
     private void activateFireball() {
-        mainBall.fireBall(4);
+        mainBall.fireBall(1);
         System.out.println("Fireball activated!");
     }
 
@@ -323,6 +338,7 @@ public class GameBoard extends Pane {
 
     public void initLevel() {
         gameOver = false;
+        gameStats.reset();
         paddle = new Paddle(250, 340, 100, 20);
 
         mainBall = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
@@ -365,6 +381,8 @@ public class GameBoard extends Pane {
         for (Ball ball : balls) {
             ball.render(gc);
         }
+
+        gameStats.render( gc, canvas.getWidth(), canvas.getHeight());
 
         // Vẽ lớp overlay (menu, pause, game over)
         status.renderOverlay(gc, canvas.getWidth(), canvas.getHeight());

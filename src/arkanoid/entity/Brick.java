@@ -22,6 +22,14 @@ public class Brick {
     private boolean isExploding = false;
     private int explosionRadius = 50;
 
+    public int getHitpoint() {
+        return hitPoints;
+    }
+
+    public void setHitpoint(int hitpoint) {
+        this.hitPoints = hitpoint;
+    }
+
     public enum BrickType {
         NORMAL(1, Color.DARKCYAN, 10),           // Gạch thường - 1 hit
         STRONG(2, Color.DARKRED, 20),            // Gạch cứng - 2 hits

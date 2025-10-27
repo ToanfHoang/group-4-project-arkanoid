@@ -30,8 +30,10 @@ public class Sound {
         clip.start();
     }
     public void stop(){
-        clip.stop();
-        clip.close();
+        if(clip != null){
+            clip.stop();
+            clip.close();
+        }
     }
 
     public void loop(){

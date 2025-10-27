@@ -36,6 +36,7 @@ public class GameBoard extends Pane {
     private AnimationTimer gameLoop;
     private boolean gameOver;
     private Image background;
+
     private void resetBallAndPaddle() {
         // Đưa paddle về giữa màn hình
         paddle.setX((canvas.getWidth() - paddle.getWidth()) / 2, canvas.getWidth());
@@ -184,7 +185,7 @@ public class GameBoard extends Pane {
                 status.toGameOver();
                 stopMusic();
                 gameOver = true;
-                return;
+
             }
             else {
                 resetBallAndPaddle();
@@ -207,7 +208,8 @@ public class GameBoard extends Pane {
                     gameStats.addScore(brick);
                     //ball.increaseSpeed();
                     playSE(2);
-                } else {
+                }
+                else {
                     brick.hasCollided();
 
                     if (brick.isDestroyed()) {
@@ -225,6 +227,14 @@ public class GameBoard extends Pane {
                             (int) (brick.getY() + brick.getHeight() / 2),
                             brick.hasPowerup(), canvas.getHeight());
                     powerups.add(p);
+                }
+                if (brick.isExploding()) {
+                    for (Brick other : bricks) {
+                        if (!other.isDestroyed() && brick.isInExplosionRange(other)) {
+                            other.destroyed();
+                            gameStats.addScore(other);
+                        }
+                    }
                 }
                 break;
             }
@@ -346,9 +356,27 @@ public class GameBoard extends Pane {
 
         balls.clear();
         bricks.clear();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 10; j++) {
-                bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 30));
+                Brick.BrickType type;
+
+                if (i == 0) {
+                    type = Brick.BrickType.UNBREAKABLE;
+                }
+                else if (i == 1) {
+                    type = Brick.BrickType.EXPLOSIVE;
+                }
+                else if (i == 2) {
+                    type = Brick.BrickType.SUPER_STRONG;
+                }
+                else if (i == 3) {
+                    type = Brick.BrickType.STRONG;
+                }
+                else {
+                    type = Brick.BrickType.NORMAL;
+                }
+
+                bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 30, type));
             }
         }
     }

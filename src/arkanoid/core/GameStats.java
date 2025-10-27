@@ -14,12 +14,6 @@ public class GameStats {
     private int lives;
     private int highScore;
 
-    // Điểm cho từng loại gạch
-    private static final int POINTS_NORMAL = 10;
-    private static final int POINTS_STRONG = 20;
-    private static final int POINTS_EXPLOSIVE = 30;
-    private static final int POINTS_BONUS = 50;
-
     // Số mạng ban đầu
     private static final int INITIAL_LIVES = 3;
 
@@ -35,20 +29,9 @@ public class GameStats {
     // Thêm điểm khi phá gạch
     public void addScore(Brick brick) {
         int points = 10;
-
-        /*
-        if (brick instanceof UnbreakableBrick) {
-            points = 0; // Không phá được thì không có điểm
-        } else if (brick instanceof DropItemBrick) {
-            points = POINTS_BONUS;
-        } else if (brick instanceof ExplosiveBrick) {
-            points = POINTS_EXPLOSIVE;
-        } else if (brick instanceof StrongBrick) {
-            points = POINTS_STRONG;
-        } else {
-            points = POINTS_NORMAL;
+        if (brick != null) {
+            points = brick.getType().getScore();
         }
-        */
 
         score += points;
 

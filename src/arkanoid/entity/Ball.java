@@ -110,7 +110,7 @@ public class Ball extends MovableObject {
     }
 
     public void stopSound() {
-        if (sound != null) {
+        if (sound != null ) {
             sound.stop();
         }
     }

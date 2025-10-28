@@ -99,7 +99,7 @@ public class Brick {
                     image = new Image("file:resource/image/hard_brick.png");
                     break;
                 case SUPER_STRONG:
-                    image = new Image("file:resource/image/item_brick.png");
+                    image = new Image("file:resource/image/items_brick.png");
                     break;
                 case EXPLOSIVE:
                     image = new Image( "file:resource/image/exploding_brick.png");
@@ -121,7 +121,9 @@ public class Brick {
         if (!destroyed) {
             gc.setFill(Color.DARKCYAN); // màu gạch
             gc.fillRect(x, y, width, height);
-            gc.drawImage(image, x, y, width, height);
+            if (image != null) {
+                gc.drawImage(image, x, y, width, height);
+            }
 
             // (tùy chọn) vẽ viền trắng quanh gạch để nhìn rõ hơn
             gc.setStroke(Color.WHITE);
@@ -151,6 +153,17 @@ public class Brick {
 
         if(hitPoints >= 1){
             hitPoints--;
+
+            // --- NEW: nếu là STRONG và vừa bị chạm 1 lần (còn 1 HP), đổi ảnh sang cracked ---
+            if(type == BrickType.STRONG && hitPoints == 1) {
+                try {
+                    Image cracked = new Image("file:resource/image/crack_brick.png");
+                    if (cracked.getWidth() > 0) image = cracked;
+                } catch (Exception e) {
+                    // nếu không tìm được ảnh cracked thì im lặng (giữ ảnh cũ)
+                }
+            }
+
             if(hitPoints == 0){
                 destroyed = true;
                 if (type == BrickType.EXPLOSIVE) {

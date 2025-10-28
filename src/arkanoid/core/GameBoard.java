@@ -11,8 +11,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static java.lang.Math.sqrt;
 
 /**
@@ -74,8 +76,7 @@ public class GameBoard extends Pane {
                     initLevel();            // khởi tạo lại màn chơi
                     status.toPlaying();     // chuyển sang trạng thái chơi
                     startGameLoop();        // bắt đầu game loop
-                }
-                else if (status.isInsideExit(mx, my)) {
+                } else if (status.isInsideExit(mx, my)) {
                     System.exit(0);
                 }
                 return;
@@ -86,8 +87,7 @@ public class GameBoard extends Pane {
                     playMusic(4);
                     status.toPlaying();     // tiếp tục chơi
                     startGameLoop();
-                }
-                else if (status.isInsideReplay(mx, my)) {
+                } else if (status.isInsideReplay(mx, my)) {
                     initLevel();            // khởi tạo lại level hoàn chỉnh
                     status.toPlaying();     // quay lại trạng thái chơi
                     startGameLoop();        // khởi động lại vòng lặp
@@ -99,8 +99,7 @@ public class GameBoard extends Pane {
                 if (status.isInsideReplayOver(mx, my)) {
                     initLevel();           // tạo lại brick, ball, paddle
                     status.toPlaying();    // quay lại chơi
-                }
-                else if (status.isInsideExitOver(mx, my)) {
+                } else if (status.isInsideExitOver(mx, my)) {
                     System.exit(0);        // thoát game
                 }
                 return;
@@ -111,8 +110,7 @@ public class GameBoard extends Pane {
                     playMusic(4);
                     initLevel();           // tạo lại brick, ball, paddle
                     status.toPlaying();    // quay lại chơi
-                }
-                else if (status.isInsideExitWin(mx, my)) {
+                } else if (status.isInsideExitWin(mx, my)) {
                     System.exit(0);        // thoát game
                 }
                 return;
@@ -134,8 +132,7 @@ public class GameBoard extends Pane {
                     if (status.isPlaying()) {
                         status.toPaused();
                         stopMusic();
-                    }
-                    else if (status.isPaused()) {
+                    } else if (status.isPaused()) {
                         status.toPlaying();
                         playMusic(4);
                     }
@@ -178,19 +175,19 @@ public class GameBoard extends Pane {
         if (balls.isEmpty()) {
             gameStats.loseLife();
 
-            if(!gameStats.hasLivesLeft()) {
+            if (!gameStats.hasLivesLeft()) {
 
                 playSE(3);
                 status.toGameOver();
                 stopMusic();
                 gameOver = true;
 
-            }
-            else {
+            } else {
                 resetBallAndPaddle();
             }
         }
-        updatePowerup();
+        mainBall.checkPaddleCollision(paddle);
+        checkBrickCollisions(mainBall);
     }
 
     private void checkBrickCollisions(Ball ball) {
@@ -215,8 +212,7 @@ public class GameBoard extends Pane {
                         handleBrickCollision(ball, brick);
                     }
                     playSE(2);
-                }
-                else {
+                } else {
                     brick.hasCollided();
 
                     if (brick.isDestroyed()) {
@@ -249,9 +245,8 @@ public class GameBoard extends Pane {
         // Nếu tất cả gạch đã bị phá -> thắng
         boolean allDestroyed = true;
         for (Brick brick : bricks) {
-            if (!brick.isDestroyed()) {
-                allDestroyed = false;
-                break;
+            if (!brick.isDestroyed() && brick.getType() != Brick.BrickType.UNBREAKABLE) {
+                return;
             }
         }
         if (allDestroyed) {
@@ -378,17 +373,13 @@ public class GameBoard extends Pane {
 
                 if (i == 0) {
                     type = Brick.BrickType.UNBREAKABLE;
-                }
-                else if (i == 1) {
+                } else if (i == 1) {
                     type = Brick.BrickType.EXPLOSIVE;
-                }
-                else if (i == 2) {
+                } else if (i == 2) {
                     type = Brick.BrickType.SUPER_STRONG;
-                }
-                else if (i == 3) {
+                } else if (i == 3) {
                     type = Brick.BrickType.STRONG;
-                }
-                else {
+                } else {
                     type = Brick.BrickType.NORMAL;
                 }
 
@@ -423,7 +414,7 @@ public class GameBoard extends Pane {
             ball.render(gc);
         }
 
-        gameStats.render( gc, canvas.getWidth(), canvas.getHeight());
+        gameStats.render(gc, canvas.getWidth(), canvas.getHeight());
 
         // Vẽ lớp overlay (menu, pause, game over)
         status.renderOverlay(gc, canvas.getWidth(), canvas.getHeight());

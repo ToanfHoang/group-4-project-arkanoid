@@ -5,6 +5,7 @@ import arkanoid.sound.Sound;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+import java.util.List;
 import java.util.TimerTask;
 
 public class Ball extends MovableObject {
@@ -195,6 +196,7 @@ public class Ball extends MovableObject {
             timer.schedule(new RemindTask(), seconds * 1000);
         }
     }
+
     class RemindTask extends TimerTask {
         public void run() {
             onFire = false;

@@ -41,9 +41,17 @@ public class Brick {
             this.score = score;
         }
 
-        public int getHitPoints() { return hitPoints; }
-        public Color getColor() { return color; }
-        public int getScore() { return score; }
+        public int getHitPoints() {
+            return hitPoints;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        public int getScore() {
+            return score;
+        }
     }
 
     // constructor
@@ -72,18 +80,14 @@ public class Brick {
         rand = new Random();
 
         // Tăng tỷ lệ powerup cho gạch khó hơn
-        if(type == BrickType.STRONG || type == BrickType.SUPER_STRONG) {
-            powerup = rand.nextInt(4); // 1/4 tỷ lệ
-        }
-        else if(type == BrickType.EXPLOSIVE) {
-            powerup = rand.nextInt(3); // 1/3 tỷ lệ
-        }
-        else if(type != BrickType.UNBREAKABLE) {
-            powerup = rand.nextInt(6); // 1/6 tỷ lệ
+        if (type == BrickType.STRONG || type == BrickType.SUPER_STRONG) {
+            powerup = rand.nextInt(5);
+        } else if (type == BrickType.EXPLOSIVE) {
+            powerup = rand.nextInt(5);
         }
         // Load image phù hợp với loại gạch
         try {
-            switch(type) {
+            switch (type) {
                 case NORMAL:
                     image = new Image("file:resource/image/normal_brick.png");
                     break;
@@ -94,7 +98,7 @@ public class Brick {
                     image = new Image("file:resource/image/items_brick.png");
                     break;
                 case EXPLOSIVE:
-                    image = new Image( "file:resource/image/exploding_brick.png");
+                    image = new Image("file:resource/image/exploding_brick.png");
                     break;
                 case MOVING:
                     //image = new Image("file:resource/image/brick.png");
@@ -117,37 +121,32 @@ public class Brick {
                 gc.drawImage(image, x, y, width, height);
             }
 
-            // (tùy chọn) vẽ viền trắng quanh gạch để nhìn rõ hơn
-            gc.setStroke(Color.WHITE);
-            gc.strokeRect(x, y, width, height);
-
             // Hiệu ứng đặc biệt cho gạch nổ
-            if(type == BrickType.EXPLOSIVE) {
+            if (type == BrickType.EXPLOSIVE) {
                 gc.setStroke(Color.YELLOW);
                 gc.setLineWidth(1);
-                double centerX = x + width/2;
-                double centerY = y + height/2;
+                double centerX = x + width / 2;
+                double centerY = y + height / 2;
                 gc.strokeLine(centerX - 5, centerY, centerX + 5, centerY);
                 gc.strokeLine(centerX, centerY - 5, centerX, centerY + 5);
             }
         }
     }
 
-    public int hasPowerup(){
+    public int hasPowerup() {
         return powerup;
     }
 
     // va chạm
-    public void hasCollided(){
-        if(type == BrickType.UNBREAKABLE){
+    public void hasCollided() {
+        if (type == BrickType.UNBREAKABLE) {
             return;
         }
 
-        if(hitPoints >= 1){
+        if (hitPoints >= 1) {
             hitPoints--;
 
-            // --- NEW: nếu là STRONG và vừa bị chạm 1 lần (còn 1 HP), đổi ảnh sang cracked ---
-            if(type == BrickType.STRONG && hitPoints == 1) {
+            if (type == BrickType.STRONG && hitPoints == 1) {
                 try {
                     Image cracked = new Image("file:resource/image/crack_brick.png");
                     if (cracked.getWidth() > 0) image = cracked;
@@ -156,20 +155,20 @@ public class Brick {
                 }
             }
 
-            if(hitPoints == 0){
+            if (hitPoints == 0) {
                 destroyed = true;
                 if (type == BrickType.EXPLOSIVE) {
                     isExploding = true;
                 }
-                if(hasPowerup() > 0){
+                if (hasPowerup() > 0) {
                     dropPowerup = true;
                 }
             }
         }
     }
 
-    public void destroyed(){
-        if(type == BrickType.UNBREAKABLE){
+    public void destroyed() {
+        if (type == BrickType.UNBREAKABLE) {
             return;
         }
 
@@ -178,16 +177,16 @@ public class Brick {
         if (type == BrickType.EXPLOSIVE) {
             isExploding = true;
         }
-        if(hasPowerup() > 0) {
+        if (hasPowerup() > 0) {
             dropPowerup = true;
         }
     }
 
     public boolean isInExplosionRange(Brick other) {
-        double centerX = x + width/2;
-        double centerY = y + height/2;
-        double otherCenterX = other.x + other.width/2;
-        double otherCenterY = other.y + other.height/2;
+        double centerX = x + width / 2;
+        double centerY = y + height / 2;
+        double otherCenterX = other.x + other.width / 2;
+        double otherCenterY = other.y + other.height / 2;
 
         double distance = Math.sqrt(
                 Math.pow(centerX - otherCenterX, 2) +
@@ -197,13 +196,33 @@ public class Brick {
         return distance <= explosionRadius;
     }
 
-    public boolean isExploding() {return isExploding; }
-    public double getX() { return x; }
-    public double getY() {return y; }
-    public double getWidth() {return width; }
-    public double getHeight() { return height; }
-    public boolean isDestroyed() { return destroyed; }
-    public BrickType getType() { return type; }
-    public int getScore() { return type.getScore(); }
+    public boolean isExploding() {
+        return isExploding;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public BrickType getType() {
+        return type;
+    }
+
 
 }

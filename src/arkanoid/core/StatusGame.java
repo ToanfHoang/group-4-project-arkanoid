@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 
 public class StatusGame {
 
-    public enum GameState { MENU, PLAYING, PAUSED, GAME_OVER, WIN }
+    public enum GameState { MENU, PLAYING, PAUSED, GAME_OVER, LEVEL_COMPLETE, WIN }
 
     private Image menuBackground = new Image("file:resource/image/menu_background.png");
     private Image pauseBackground = new Image("file:resource/image/pause_background.png");
@@ -19,6 +19,12 @@ public class StatusGame {
     private Image btnReplay = new Image("file:resource/image/replay.png");
     private Image btnExit = new Image("file:resource/image/exit.png");
     private Image WinGame  = new Image("file:resource/image/win_game.png");
+    private Image completeBackground = new Image("file:resource/image/complete.png");
+    private Image btnLevelContinue = new Image("file:resource/image/continue.png");
+    private Image btnLevelExit = new Image("file:resource/image/exit.png");
+
+    private final double contLevelX = 220, contLevelY = 230, contLevelW = 140, contLevelH = 50;
+    private final double exitLevelX = 220, exitLevelY = 300, exitLevelW = 140, exitLevelH = 50;
 
     private GameState state = GameState.MENU;
 
@@ -33,6 +39,9 @@ public class StatusGame {
 
     private final double replayWinX = 220, replayWinY = 230, replayWinW = 140, replayWinH = 50;
     private final double exitWinX = 220, exitWinY = 300, exitWinW = 140, exitWinH = 50;
+
+    public void toLevelComplete() { state = GameState.LEVEL_COMPLETE; }
+    public boolean isLevelComplete() { return state == GameState.LEVEL_COMPLETE; }
 
     public boolean isInsidePlay(double x, double y) {
         return x >= playX && x <= playX + playW && y >= playY && y <= playY + playH;
@@ -54,6 +63,14 @@ public class StatusGame {
         return x >= exitOverX && x <= exitOverX + exitOverW && y >= exitOverY && y <= exitOverY + exitOverH;
     }
 
+    public boolean isInsideExitComplete(double x, double y) {
+        return x >= exitLevelX && x <= exitLevelX + exitLevelW && y >= exitLevelY && y <= exitLevelY + exitLevelH;
+    }
+
+    public boolean isInsideContinueComplete(double x, double y) {
+        return x >= contLevelX && x <= contLevelX + contLevelW && y >= contLevelY && y <= contLevelY + contLevelH;
+    }
+
     public boolean isInsideReplayWin(double x, double y) {
         return x >= replayWinX && x <= replayWinX + replayWinW && y >= replayWinY && y <= replayWinY + replayWinH;
     }
@@ -67,6 +84,15 @@ public class StatusGame {
     public boolean isPaused()   { return state == GameState.PAUSED; }
     public boolean isGameOver() { return state == GameState.GAME_OVER; }
     public boolean isWin()      { return state == GameState.WIN; }
+
+    public boolean isInsideContinueLevel(double x, double y) {
+        return x >= contLevelX && x <= contLevelX + contLevelW
+                && y >= contLevelY && y <= contLevelY + contLevelH;
+    }
+    public boolean isInsideExitLevel(double x, double y) {
+        return x >= exitLevelX && x <= exitLevelX + exitLevelW
+                && y >= exitLevelY && y <= exitLevelY + exitLevelH;
+    }
 
     public void toPlaying()  { state = GameState.PLAYING; }
     public void toPaused()   { state = GameState.PAUSED; }
@@ -103,6 +129,11 @@ public class StatusGame {
             gc.drawImage(WinGame, 0,0, w, h);
             gc.drawImage(btnReplay, replayWinX, replayWinY, replayWinW, replayWinH);
             gc.drawImage(btnExit, exitWinX, exitWinY, exitWinW, exitWinH);
+        }
+        else if (isLevelComplete()) {
+            gc.drawImage(completeBackground, 0, 0, w, h);
+            gc.drawImage(btnLevelContinue, contLevelX, contLevelY, contLevelW, contLevelH);
+            gc.drawImage(btnLevelExit, exitLevelX, exitLevelY, exitLevelW, exitLevelH);
         }
     }
 }

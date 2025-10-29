@@ -5,6 +5,7 @@ import arkanoid.entity.Brick;
 import arkanoid.entity.Paddle;
 import arkanoid.entity.Powerup;
 import arkanoid.sound.Sound;
+import arkanoid.entity.*;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -31,13 +32,15 @@ public class GameBoard extends Pane {
     private double mouseX = 0, mouseY = 0;
     private final Canvas canvas;
     private final GraphicsContext gc;
-
+    private LevelManager levelManager = new LevelManager();
     private Paddle paddle;
     private final List<Ball> balls = new ArrayList<>(); //danh sach bong
     private final List<Brick> bricks = new ArrayList<>();
     private final StatusGame status = new StatusGame();
     private final GameStats gameStats = new GameStats();
     private final List<Powerup> powerups = new ArrayList<>();
+    private LevelCompleteOverlay levelOverlay;
+    private boolean levelComplete = false;
 
     private AnimationTimer gameLoop;
     private boolean gameOver;
@@ -141,6 +144,19 @@ public class GameBoard extends Pane {
                 if (!balls.isEmpty() && balls.get(0).isAttached()) {
                     balls.get(0).releaseFromPaddle();
                 }
+            }
+            if (status.isLevelComplete()) {
+                if (status.isInsideContinueLevel(mx, my)) {
+                    playMusic(4);
+                    levelManager.nextLevel(); // load map tiếp theo
+                    initLevel();
+                    resetBallAndPaddle();
+                    status.toPlaying();
+                    startGameLoop();
+                } else if (status.isInsideExitLevel(mx, my)) {
+                    System.exit(0);
+                }
+                return;
             }
         });
 
@@ -269,9 +285,9 @@ public class GameBoard extends Pane {
         if (allDestroyed) {
             playSE(5);
             bgm.stop();
-            status.toWin();
-            if (gameLoop != null) gameLoop.stop();
-            return;
+
+            status.toLevelComplete();
+            gameLoop.stop();
         }
 
     }
@@ -382,25 +398,9 @@ public class GameBoard extends Pane {
         balls.clear();
         bricks.clear();
         powerups.clear();
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 10; j++) {
-                Brick.BrickType type;
 
-                if (i == 0) {
-                    type = Brick.BrickType.UNBREAKABLE;
-                } else if (i == 1) {
-                    type = Brick.BrickType.EXPLOSIVE;
-                } else if (i == 2) {
-                    type = Brick.BrickType.SUPER_STRONG;
-                } else if (i == 3) {
-                    type = Brick.BrickType.STRONG;
-                } else {
-                    type = Brick.BrickType.NORMAL;
-                }
-
-                bricks.add(new Brick(50 + j * 50, 40 + i * 30, 50, 30, type));
-            }
-        }
+        bricks.addAll(levelManager.loadCurrentLevel());
+        balls.add(mainBall);
     }
 
     public void renderAll() {
@@ -488,6 +488,17 @@ public class GameBoard extends Pane {
             handleHoverSound("gameover_exit", hoverExit);
 
             if (hoverReplay) drawGlow(220, 230, 140, 50);
+            if (hoverExit) drawGlow(220, 300, 140, 50);
+        }
+
+        if (status.isLevelComplete()){
+            boolean hoverContinue = status.isInsideContinueComplete(mouseX, mouseY);
+            boolean hoverExit = status.isInsideExitComplete(mouseX, mouseY);
+
+            handleHoverSound("complete_continue", hoverContinue);
+            handleHoverSound("complete_exit", hoverExit);
+
+            if (hoverContinue) drawGlow(220, 230, 140, 50);
             if (hoverExit) drawGlow(220, 300, 140, 50);
         }
 

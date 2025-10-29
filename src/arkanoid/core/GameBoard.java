@@ -11,8 +11,13 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import static java.lang.Math.sqrt;
 
 /**
@@ -22,6 +27,8 @@ import static java.lang.Math.sqrt;
  * - Render toàn bộ lên Canvas
  */
 public class GameBoard extends Pane {
+    private final Map<String, Boolean> hoverState = new HashMap<>();
+    private double mouseX = 0, mouseY = 0;
     private final Canvas canvas;
     private final GraphicsContext gc;
 
@@ -55,6 +62,9 @@ public class GameBoard extends Pane {
         startGameLoop();
 
         canvas.setOnMouseMoved(e -> {
+            this.mouseX = e.getX();
+            this.mouseY = e.getY();
+
             if (!status.isPlaying()) return; // Chỉ di chuyển khi đang chơi
             double mouseX = e.getX();
             paddle.setX(mouseX - paddle.getWidth() / 2, canvas.getWidth());
@@ -414,6 +424,7 @@ public class GameBoard extends Pane {
 
         // Vẽ lớp overlay (menu, pause, game over)
         status.renderOverlay(gc, canvas.getWidth(), canvas.getHeight());
+        drawHoverEffect();
     }
 
     Sound sound = new Sound();
@@ -432,5 +443,72 @@ public class GameBoard extends Pane {
     public void playSE(int i) {  //chạy Sound Effects
         sound.setFile(i);
         sound.play();
+    }
+    private void drawHoverEffect() {
+        // MENU
+        if (status.isMenu()) {
+            boolean hoverPlay = status.isInsidePlay(mouseX, mouseY);
+            boolean hoverExit = status.isInsideExit(mouseX, mouseY);
+
+            handleHoverSound("menu_play", hoverPlay);
+            handleHoverSound("menu_exit", hoverExit);
+
+            if (hoverPlay) drawGlow(220, 220, 140, 50);
+            if (hoverExit) drawGlow(220, 290, 140, 50);
+        }
+
+        // PAUSED
+        if (status.isPaused()) {
+            boolean hoverContinue = status.isInsideContinue(mouseX, mouseY);
+            boolean hoverReplay = status.isInsideReplay(mouseX, mouseY);
+
+            handleHoverSound("paused_continue", hoverContinue);
+            handleHoverSound("paused_replay", hoverReplay);
+
+            if (hoverContinue) drawGlow(220, 200, 140, 50);
+            if (hoverReplay) drawGlow(220, 270, 140, 50);
+        }
+
+        // GAME OVER
+        if (status.isGameOver()) {
+            boolean hoverReplay = status.isInsideReplayOver(mouseX, mouseY);
+            boolean hoverExit = status.isInsideExitOver(mouseX, mouseY);
+
+            handleHoverSound("gameover_replay", hoverReplay);
+            handleHoverSound("gameover_exit", hoverExit);
+
+            if (hoverReplay) drawGlow(220, 230, 140, 50);
+            if (hoverExit) drawGlow(220, 300, 140, 50);
+        }
+
+        // WIN
+        if (status.isWin()) {
+            boolean hoverReplay = status.isInsideReplayWin(mouseX, mouseY);
+            boolean hoverExit = status.isInsideExitWin(mouseX, mouseY);
+
+            handleHoverSound("win_replay", hoverReplay);
+            handleHoverSound("win_exit", hoverExit);
+
+            if (hoverReplay) drawGlow(220, 230, 140, 50);
+            if (hoverExit) drawGlow(220, 300, 140, 50);
+        }
+    }
+
+    private void drawGlow(double x, double y, double w, double h) {
+        gc.save();
+        double pulse = 0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 200.0);
+        gc.setGlobalAlpha(0.5 + 0.3 * pulse);
+        gc.setStroke(Color.web("#FFD700")); // vàng sáng
+        gc.setLineWidth(3 + 2 * pulse);
+        gc.strokeRoundRect(x - 5, y - 5, w + 10, h + 10, 15, 15);
+        gc.restore();
+    }
+
+    private void handleHoverSound(String key, boolean isHovering) {
+        boolean wasHovering = hoverState.getOrDefault(key, false);
+        if (isHovering && !wasHovering) {
+            playSE(7);
+        }
+        hoverState.put(key, isHovering);
     }
 }

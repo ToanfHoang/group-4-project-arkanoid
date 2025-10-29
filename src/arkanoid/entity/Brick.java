@@ -191,6 +191,6 @@ public class Brick {
     public double getHeight() { return height; }
     public boolean isDestroyed() { return destroyed; }
     public BrickType getType() { return type; }
-    public int getScore() { return type.getScore(); }
+
 
 }

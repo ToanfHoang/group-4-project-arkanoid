@@ -318,7 +318,7 @@ public class GameBoard extends Pane {
     }
 
     private void activateFireball() {
-        mainBall.fireBall(1);
+        mainBall.fireBall(5);
         System.out.println("Fireball activated!");
     }
 

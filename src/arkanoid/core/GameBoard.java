@@ -33,7 +33,6 @@ public class GameBoard extends Pane {
     private final GraphicsContext gc;
 
     private Paddle paddle;
-    private Ball mainBall;
     private final List<Ball> balls = new ArrayList<>(); //danh sach bong
     private final List<Brick> bricks = new ArrayList<>();
     private final StatusGame status = new StatusGame();
@@ -47,11 +46,24 @@ public class GameBoard extends Pane {
     private void resetBallAndPaddle() {
         // Đưa paddle về giữa màn hình
         paddle.setX((canvas.getWidth() - paddle.getWidth()) / 2, canvas.getWidth());
+
+        // Nếu không còn bóng nào -> tạo bóng mới
+        if (balls.isEmpty()) {
+            Ball newBall = new Ball(
+                    paddle.getX() + paddle.getWidth() / 2 - 10,
+                    paddle.getY() - 20,
+                    10, canvas.getWidth(), canvas.getHeight()
+            );
+            balls.add(newBall);
+        }
+
+        // Reset tất cả bóng hiện có
         for (Ball ball : balls) {
             ball.reset();
         }
-        // Đặt bóng lên trên paddle
-        mainBall.attachToPaddle(paddle); // bóng dính paddle
+
+        // Đặt bóng đầu tiên dính vào paddle
+        balls.get(0).attachToPaddle(paddle);
     }
 
     public GameBoard(int width, int height) {
@@ -70,7 +82,10 @@ public class GameBoard extends Pane {
             if (!status.isPlaying()) return; // Chỉ di chuyển khi đang chơi
             double mouseX = e.getX();
             paddle.setX(mouseX - paddle.getWidth() / 2, canvas.getWidth());
-            if (mainBall.isAttached()) mainBall.attachToPaddle(paddle);
+            if (!balls.isEmpty() && balls.get(0).isAttached()) {
+                balls.get(0).attachToPaddle(paddle);
+            }
+            ;
         });
 
         canvas.setOnMouseClicked(e -> {
@@ -123,8 +138,8 @@ public class GameBoard extends Pane {
 
             if (status.isPlaying() && e.getButton() == MouseButton.PRIMARY) {
                 // chỉ bắn bóng khi nó đang gắn với paddle
-                if (mainBall.isAttached()) {
-                    mainBall.releaseFromPaddle();
+                if (!balls.isEmpty() && balls.get(0).isAttached()) {
+                    balls.get(0).releaseFromPaddle();
                 }
             }
         });
@@ -163,11 +178,6 @@ public class GameBoard extends Pane {
         if (!status.isPlaying()) return;
         if (gameOver) return;
 
-        if (!mainBall.isFellOut()) {
-            mainBall.update();
-            mainBall.checkPaddleCollision(paddle);
-            checkBrickCollisions(mainBall);
-        }
         updatePowerup();
         List<Ball> ballsToRemove = new ArrayList<>();
         for (Ball ball : balls) {
@@ -183,7 +193,7 @@ public class GameBoard extends Pane {
         }
         balls.removeAll(ballsToRemove);
 
-        if (mainBall.isFellOut() && balls.isEmpty()) {
+        if (balls.isEmpty()) {
             gameStats.loseLife();
 
             if (!gameStats.hasLivesLeft()) {
@@ -197,9 +207,6 @@ public class GameBoard extends Pane {
                 resetBallAndPaddle();
             }
         }
-
-        //mainBall.checkPaddleCollision(paddle);
-        //checkBrickCollisions(mainBall);
     }
 
     private void checkBrickCollisions(Ball ball) {
@@ -229,8 +236,6 @@ public class GameBoard extends Pane {
                     if (brick.isDestroyed()) {
                         gameStats.addScore(brick);
                     }
-
-
                     playSE(2);
                     handleBrickCollision(ball, brick);
                 }
@@ -327,13 +332,18 @@ public class GameBoard extends Pane {
             double angle = Math.toRadians(-60 + Math.random() * 120);
             newBall.setDx(newBall.getSpeed() * Math.sin(angle));
             newBall.setDy(-Math.abs(newBall.getSpeed() * Math.cos(angle)));
+            if (isFireActive) {
+                newBall.fireBall(6);
+            }
             balls.add(newBall);
         }
         System.out.println("Multi-ball activated!");
     }
 
     private void activateFireball() {
-        mainBall.fireBall(5);
+        for (Ball ball : balls) {
+            ball.fireBall(6);
+        }
         System.out.println("Fireball activated!");
     }
 
@@ -366,11 +376,12 @@ public class GameBoard extends Pane {
         gameStats.reset();
         paddle = new Paddle(250, 340, 100, 20);
 
-        mainBall = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
+        Ball mainBall = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
         mainBall.attachToPaddle(paddle);
 
         balls.clear();
         bricks.clear();
+        powerups.clear();
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 10; j++) {
                 Brick.BrickType type;
@@ -412,9 +423,6 @@ public class GameBoard extends Pane {
 
         // Vẽ paddle và bóng
         paddle.render(gc);
-        if (!mainBall.isFellOut()) {
-            mainBall.render(gc);
-        }
 
         // Vẽ tất cả các bóng phụ
         for (Ball ball : balls) {
@@ -445,6 +453,7 @@ public class GameBoard extends Pane {
         sound.setFile(i);
         sound.play();
     }
+
     private void drawHoverEffect() {
         // MENU
         if (status.isMenu()) {

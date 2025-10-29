@@ -204,33 +204,13 @@ public class Brick {
         return distance <= explosionRadius;
     }
 
-    public boolean isExploding() {
-        return isExploding;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
-    public boolean isDestroyed() {
-        return destroyed;
-    }
-
-    public BrickType getType() {
-        return type;
-    }
+    public boolean isExploding() {return isExploding; }
+    public double getX() { return x; }
+    public double getY() {return y; }
+    public double getWidth() {return width; }
+    public double getHeight() { return height; }
+    public boolean isDestroyed() { return destroyed; }
+    public BrickType getType() { return type; }
 
 
 }

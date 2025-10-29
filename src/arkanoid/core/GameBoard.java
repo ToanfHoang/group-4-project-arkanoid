@@ -333,9 +333,7 @@ public class GameBoard extends Pane {
     }
 
     private void activateFireball() {
-        for (Ball ball : balls) {
-            ball.fireBall(6);
-        }
+        mainBall.fireBall(5);
         System.out.println("Fireball activated!");
     }
 

@@ -178,10 +178,6 @@ public class Ball extends MovableObject {
         }
     }
 
-    // Reset speed về ban đầu khi bắt đầu level mới
-    public void resetSpeed() {
-        currentSpeed = 1.0;
-    }
 
     public void playSE(int i) {
         sound.setFile(i);

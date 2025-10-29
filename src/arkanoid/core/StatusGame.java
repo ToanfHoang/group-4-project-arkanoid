@@ -22,10 +22,6 @@ public class StatusGame {
 
     private GameState state = GameState.MENU;
 
-    private long flashTime = 0;
-    private String activeButton = "";
-    private String hoverButton = "";
-
     private final double playX = 220, playY = 220, playW = 140, playH = 50;
     private final double exitX  = 220, exitY  = 290, exitW  = 140, exitH  = 50;
 
@@ -77,19 +73,6 @@ public class StatusGame {
     public void toGameOver() { state = GameState.GAME_OVER; }
     public void toWin()      { state = GameState.WIN; }
 
-    public void triggerButton(String name) {
-        activeButton = name;
-        flashTime = System.currentTimeMillis();
-    }
-
-    public void setHover(String name) {
-        hoverButton = name;
-    }
-
-    public void clearHover() {
-        hoverButton = "";
-    }
-
     public void renderOverlay(GraphicsContext gc, double w, double h) {
         if (isPlaying()) return;
 
@@ -121,43 +104,5 @@ public class StatusGame {
             gc.drawImage(btnReplay, replayWinX, replayWinY, replayWinW, replayWinH);
             gc.drawImage(btnExit, exitWinX, exitWinY, exitWinW, exitWinH);
         }
-    }
-
-    private void drawNeonText(GraphicsContext gc, String text, double centerX, double y, Color color, int size) {
-        Font font = Font.font("Consolas", size);
-        gc.setFont(font);
-        double textWidth = getTextWidth(font, text);
-        double x = centerX - textWidth / 2;
-
-        gc.setFill(color);
-        gc.setStroke(color.brighter());
-        gc.setLineWidth(2);
-
-        gc.setGlobalAlpha(0.25);
-        gc.setFill(color.deriveColor(0, 1, 1, 0.2));
-        gc.fillText(text, x + 3, y + 3);
-        gc.setGlobalAlpha(1);
-
-        gc.strokeText(text, x, y);
-        gc.fillText(text, x, y);
-    }
-
-    private void drawHint(GraphicsContext gc, double w, double h, String text) {
-        gc.setFont(Font.font("Consolas", 16));
-        gc.setFill(Color.GRAY);
-        double textW = getTextWidth(gc.getFont(), text);
-        gc.fillText(text, (w - textW) / 2, h - 30);
-    }
-
-    private void drawCenter(GraphicsContext gc, double btnW, double x, double y, String text) {
-        double textW = getTextWidth(gc.getFont(), text);
-        gc.fillText(text, x + (btnW - textW) / 2, y);
-    }
-
-    private double getTextWidth(Font font, String s) {
-        Text t = new Text(s);
-        t.setFont(font);
-        t.setBoundsType(TextBoundsType.VISUAL);
-        return t.getLayoutBounds().getWidth();
     }
 }

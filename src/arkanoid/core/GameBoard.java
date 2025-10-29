@@ -39,7 +39,6 @@ public class GameBoard extends Pane {
     private final StatusGame status = new StatusGame();
     private final GameStats gameStats = new GameStats();
     private final List<Powerup> powerups = new ArrayList<>();
-    private LevelCompleteOverlay levelOverlay;
     private boolean levelComplete = false;
 
     private AnimationTimer gameLoop;

@@ -88,10 +88,14 @@ public class Brick {
         rand = new Random();
 
         // Tăng tỷ lệ powerup cho gạch khó hơn
-        if (type == BrickType.STRONG || type == BrickType.SUPER_STRONG) {
-            powerup = rand.nextInt(5);
-        } else if (type == BrickType.EXPLOSIVE) {
-            powerup = rand.nextInt(5);
+        if(type == BrickType.STRONG || type == BrickType.SUPER_STRONG) {
+            powerup = rand.nextInt(10); // 1/4 tỷ lệ
+        }
+        else if(type == BrickType.EXPLOSIVE) {
+            powerup = rand.nextInt(10); // 1/3 tỷ lệ
+        }
+        else if(type != BrickType.UNBREAKABLE) {
+            powerup = rand.nextInt(10); // 1/6 tỷ lệ
         }
         // Load image phù hợp với loại gạch
         try {

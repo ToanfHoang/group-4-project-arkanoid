@@ -47,7 +47,9 @@ public class GameBoard extends Pane {
     private void resetBallAndPaddle() {
         // Đưa paddle về giữa màn hình
         paddle.setX((canvas.getWidth() - paddle.getWidth()) / 2, canvas.getWidth());
-        mainBall.reset();
+        for (Ball ball : balls) {
+            ball.reset();
+        }
         // Đặt bóng lên trên paddle
         mainBall.attachToPaddle(paddle); // bóng dính paddle
     }
@@ -79,8 +81,7 @@ public class GameBoard extends Pane {
                     initLevel();            // khởi tạo lại màn chơi
                     status.toPlaying();     // chuyển sang trạng thái chơi
                     startGameLoop();        // bắt đầu game loop
-                }
-                else if (status.isInsideExit(mx, my)) {
+                } else if (status.isInsideExit(mx, my)) {
                     System.exit(0);
                 }
                 return;
@@ -91,8 +92,7 @@ public class GameBoard extends Pane {
                     playMusic(4);
                     status.toPlaying();     // tiếp tục chơi
                     startGameLoop();
-                }
-                else if (status.isInsideReplay(mx, my)) {
+                } else if (status.isInsideReplay(mx, my)) {
                     initLevel();            // khởi tạo lại level hoàn chỉnh
                     status.toPlaying();     // quay lại trạng thái chơi
                     startGameLoop();        // khởi động lại vòng lặp
@@ -104,8 +104,7 @@ public class GameBoard extends Pane {
                 if (status.isInsideReplayOver(mx, my)) {
                     initLevel();           // tạo lại brick, ball, paddle
                     status.toPlaying();    // quay lại chơi
-                }
-                else if (status.isInsideExitOver(mx, my)) {
+                } else if (status.isInsideExitOver(mx, my)) {
                     System.exit(0);        // thoát game
                 }
                 return;
@@ -116,8 +115,7 @@ public class GameBoard extends Pane {
                     playMusic(4);
                     initLevel();           // tạo lại brick, ball, paddle
                     status.toPlaying();    // quay lại chơi
-                }
-                else if (status.isInsideExitWin(mx, my)) {
+                } else if (status.isInsideExitWin(mx, my)) {
                     System.exit(0);        // thoát game
                 }
                 return;
@@ -139,8 +137,7 @@ public class GameBoard extends Pane {
                     if (status.isPlaying()) {
                         status.toPaused();
                         stopMusic();
-                    }
-                    else if (status.isPaused()) {
+                    } else if (status.isPaused()) {
                         status.toPlaying();
                         playMusic(4);
                     }
@@ -189,15 +186,14 @@ public class GameBoard extends Pane {
         if (mainBall.isFellOut() && balls.isEmpty()) {
             gameStats.loseLife();
 
-            if(!gameStats.hasLivesLeft()) {
+            if (!gameStats.hasLivesLeft()) {
 
                 playSE(3);
                 status.toGameOver();
                 stopMusic();
                 gameOver = true;
 
-            }
-            else {
+            } else {
                 resetBallAndPaddle();
             }
         }
@@ -214,19 +210,27 @@ public class GameBoard extends Pane {
         for (Brick brick : bricks) {
             if (!brick.isDestroyed() && checkCollision(ball, brick)) {
                 if (ball.isOnFire()) {
-                    brick.destroyed();
-                    gameStats.addScore(brick);
-                    //ball.increaseSpeed();
+                    // Fireball: giảm hitpoint đi 2
+                    for (int i = 0; i < 2; i++) {
+                        brick.hasCollided();
+                    }
+
+                    // Nếu gạch bị phá sau khi giảm hitpoint
+                    if (brick.isDestroyed()) {
+                        gameStats.addScore(brick);
+                    }
+                    if (brick.getHitpoint() > 0) {
+                        handleBrickCollision(ball, brick);
+                    }
                     playSE(2);
-                }
-                else {
+                } else {
                     brick.hasCollided();
 
                     if (brick.isDestroyed()) {
                         gameStats.addScore(brick);
                     }
 
-                    ball.increaseSpeed();
+
                     playSE(2);
                     handleBrickCollision(ball, brick);
                 }
@@ -308,7 +312,8 @@ public class GameBoard extends Pane {
     }
 
     private void createExtraBalls() {
-        int ballToCreate = 2;
+        int ballToCreate = 1;
+        boolean isFireActive = !balls.isEmpty() && balls.get(0).isOnFire();
         for (int i = 0; i < ballToCreate; i++) {
             Ball newBall = new Ball(
                     paddle.getX() + paddle.getWidth() / 2 - 10,
@@ -372,17 +377,13 @@ public class GameBoard extends Pane {
 
                 if (i == 0) {
                     type = Brick.BrickType.UNBREAKABLE;
-                }
-                else if (i == 1) {
+                } else if (i == 1) {
                     type = Brick.BrickType.EXPLOSIVE;
-                }
-                else if (i == 2) {
+                } else if (i == 2) {
                     type = Brick.BrickType.SUPER_STRONG;
-                }
-                else if (i == 3) {
+                } else if (i == 3) {
                     type = Brick.BrickType.STRONG;
-                }
-                else {
+                } else {
                     type = Brick.BrickType.NORMAL;
                 }
 
@@ -420,7 +421,7 @@ public class GameBoard extends Pane {
             ball.render(gc);
         }
 
-        gameStats.render( gc, canvas.getWidth(), canvas.getHeight());
+        gameStats.render(gc, canvas.getWidth(), canvas.getHeight());
 
         // Vẽ lớp overlay (menu, pause, game over)
         status.renderOverlay(gc, canvas.getWidth(), canvas.getHeight());

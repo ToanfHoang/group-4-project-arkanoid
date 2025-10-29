@@ -14,6 +14,8 @@ public class Ball extends MovableObject {
     private final double canvasHeight;
 
     private double currentSpeed = 0.5;
+    private double normalSpeed = 1.0; // Tốc độ bình thường
+    private double fireballSpeed = 2.0; // Tốc độ khi fireball
 
     private boolean attached = true; // Bóng ban đầu gắn vào paddle
     private boolean fellOut = false;
@@ -97,7 +99,8 @@ public class Ball extends MovableObject {
             double distanceFromCenter = ballCenter - paddleCenter;
 
             // Chuẩn hóa giá trị từ -1 đến +1
-            double ratio = Math.max(-1, Math.min(1, distanceFromCenter / (paddle.getWidth() / 2.0)));
+            double ratio = Math.max(-1,
+                    Math.min(1, distanceFromCenter / (paddle.getWidth() / 2.0)));
 
             // Tính góc phản xạ
             double maxAngle = Math.toRadians(65);
@@ -111,14 +114,15 @@ public class Ball extends MovableObject {
     }
 
     public void stopSound() {
-        if (sound != null ) {
+        if (sound != null) {
             sound.stop();
         }
     }
+
     public void reset() {
         fellOut = false;
         attached = true;
-        currentSpeed = 1.0;
+        currentSpeed = normalSpeed;
         onFire = false;
         stopSound();
 
@@ -134,17 +138,8 @@ public class Ball extends MovableObject {
 
     // Tăng tốc độ cơ bản - gọi khi phá gạch
     public void increaseSpeed() {
-        currentSpeed *= 1.05;  // tăng speed
-
-        // Giới hạn tốc độ tối đa
-        if (currentSpeed > 3.0) {
-            currentSpeed = 3.0;
-        }
-
-        // Cập nhật lại dx, dy theo hướng hiện tại
-        double angle = Math.atan2(dy, dx);
-        dx = currentSpeed * Math.cos(angle);
-        dy = currentSpeed * Math.sin(angle);
+        currentSpeed = 2;  // tăng speed
+        updateVelocity();
     }
 
     public double getSpeed() {
@@ -184,11 +179,13 @@ public class Ball extends MovableObject {
         sound.play();
     }
 
-    public void fireBall(int seconds){
-        if(!onFire){
+    public void fireBall(int seconds) {
+        if (!onFire) {
             fireSec = seconds;
             onFire = true;
             this.image = fireballImage; // Đổi hình ảnh
+            currentSpeed = fireballSpeed;
+            updateVelocity(); // Cập nhật dx, dy
             timer.schedule(new RemindTask(), seconds * 1000);
         }
     }
@@ -197,6 +194,19 @@ public class Ball extends MovableObject {
         public void run() {
             onFire = false;
             image = new Image("file:resource/image/ball_1.png"); // Đổi lại hình ảnh bình thường
+
+            currentSpeed = normalSpeed;
+            updateVelocity();
+        }
+    }
+
+    // cập nhật vận tốc dx, dy dựa trên currentSpeed
+    private void updateVelocity() {
+        double magnitude = Math.sqrt(dx * dx + dy * dy);
+        if (magnitude > 0) {
+            // Giữ nguyên hướng, chỉ thay đổi tốc độ
+            dx = (dx / magnitude) * currentSpeed;
+            dy = (dy / magnitude) * currentSpeed;
         }
     }
 

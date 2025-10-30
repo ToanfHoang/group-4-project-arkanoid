@@ -233,15 +233,13 @@ public class GameBoard extends Pane {
             if (!brick.isDestroyed() && checkCollision(ball, brick)) {
                 if (ball.isOnFire()) {
                     // Fireball: giảm hitpoint đi 2
-                    for (int i = 0; i < 2; i++) {
+                    int remainingHits = Math.min(2, brick.getHitpoint());
+                    for (int i = 0; i < remainingHits; i++) {
                         brick.hasCollided();
                     }
 
-                    // Nếu gạch bị phá sau khi giảm hitpoint
-                    if (brick.isDestroyed()) {
-                        gameStats.addScore(brick);
-                    }
-                    if (brick.getHitpoint() > 0) {
+                    // Chỉ xử lý va chạm nếu gạch chưa bị phá
+                    if (!brick.isDestroyed()) {
                         handleBrickCollision(ball, brick);
                     }
                     playSE(2);

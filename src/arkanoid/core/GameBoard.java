@@ -36,6 +36,7 @@ public class GameBoard extends Pane {
     private Paddle paddle;
     private final List<Ball> balls = new ArrayList<>(); //danh sach bong
     private final List<Brick> bricks = new ArrayList<>();
+    private final List<Brick> unbreakableBricks = new ArrayList<>();
     private final StatusGame status = new StatusGame();
     private final GameStats gameStats = new GameStats();
     private final List<Powerup> powerups = new ArrayList<>();
@@ -273,6 +274,15 @@ public class GameBoard extends Pane {
                 break;
             }
         }
+
+        for (Brick brick : unbreakableBricks) {
+            if (checkCollision(ball, brick)) {
+                handleBrickCollision(ball, brick); // Chỉ đổi hướng, không phá gạch
+                playSE(2); // Vẫn có âm thanh va chạm
+                break;
+            }
+        }
+
         // Nếu tất cả gạch đã bị phá -> thắng
         boolean allDestroyed = true;
         for (Brick brick : bricks) {
@@ -396,9 +406,12 @@ public class GameBoard extends Pane {
 
         balls.clear();
         bricks.clear();
+        unbreakableBricks.clear();
         powerups.clear();
 
-        bricks.addAll(levelManager.loadCurrentLevel());
+        MapLoader.MapData mapData = levelManager.loadCurrentLevel();
+        bricks.addAll(mapData.breakableBricks);
+        unbreakableBricks.addAll(mapData.unbreakableBricks);
         balls.add(mainBall);
     }
 
@@ -414,6 +427,7 @@ public class GameBoard extends Pane {
 
         // Vẽ gạch
         for (Brick brick : bricks) brick.render(gc);
+        for (Brick brick : unbreakableBricks) brick.render(gc);
 
         // Vẽ powerups
         for (Powerup powerup : powerups) {

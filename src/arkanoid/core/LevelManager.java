@@ -7,7 +7,7 @@ public class LevelManager {
     private int currentLevel = 1;
     private final int maxLevel = 5;
 
-    public List<Brick> loadCurrentLevel() {
+    public MapLoader.MapData loadCurrentLevel() {
         String filename = String.format("map%02d.txt", currentLevel);
         return MapLoader.loadMap(filename, 50, 30);
     }

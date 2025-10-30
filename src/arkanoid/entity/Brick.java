@@ -63,13 +63,13 @@ public class Brick {
     }
 
     // constructor
-    public Brick(double x, double y, double width, double height, int hitpoints, int i) {
+    public Brick(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         originalHitPoints = hitPoints;
-        this.hitPoints = hitpoints;
+        this.hitPoints = hitPoints;
         this.type = BrickType.NORMAL;
         image = new Image("file:resource/image/brick.png");
     }
@@ -215,4 +215,6 @@ public class Brick {
     public double getHeight() { return height; }
     public boolean isDestroyed() { return destroyed; }
     public BrickType getType() { return type; }
+
+
 }

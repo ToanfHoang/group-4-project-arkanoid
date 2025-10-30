@@ -10,14 +10,24 @@ import java.util.List;
 
 public class MapLoader {
 
-    public static List<Brick> loadMap(String filename, int brickWidth, int brickHeight) {
-        List<Brick> bricks = new ArrayList<>();
+    public static class MapData {
+        public List<Brick> breakableBricks;
+        public List<Brick> unbreakableBricks;
 
+        public MapData(List<Brick> breakable, List<Brick> unbreakable) {
+            this.breakableBricks = breakable;
+            this.unbreakableBricks = unbreakable;
+        }
+    }
+
+    public static MapData loadMap(String filename, int brickWidth, int brickHeight) {
+        List<Brick> bricks = new ArrayList<>();
+        List<Brick> unbreakableBricks = new ArrayList<>();
         try {
             URL resource = MapLoader.class.getResource("/map/" + filename);
             if (resource == null) {
                 System.err.println("Không tìm thấy map: " + filename);
-                return bricks;
+                return new MapData( bricks, unbreakableBricks);
             }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream()));
@@ -27,7 +37,14 @@ public class MapLoader {
             while ((line = reader.readLine()) != null) {
                 for (int col = 0; col < line.length(); col++) {
                     char c = line.charAt(col);
-                    if (c != '0') { // 0 là ô trống
+
+
+                    if (c == '1') { // gạch không thể phá hủy
+                        Brick.BrickType type = mapCharToType(c);
+                        unbreakableBricks.add(new Brick(100 + col * brickWidth, 40 + row * brickHeight,
+                                brickWidth, brickHeight, type));
+                    }
+                    else if (c >= '2' && c <= '5') {
                         Brick.BrickType type = mapCharToType(c);
                         bricks.add(new Brick(100 + col * brickWidth, 40 + row * brickHeight,
                                 brickWidth, brickHeight, type));
@@ -41,7 +58,7 @@ public class MapLoader {
             e.printStackTrace();
         }
 
-        return bricks;
+        return new MapData( bricks, unbreakableBricks);
     }
 
     private static Brick.BrickType mapCharToType(char c) {

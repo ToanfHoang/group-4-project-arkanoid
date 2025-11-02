@@ -24,7 +24,13 @@ public class GameStats {
     public void reset() {
         score = 0;
         lives = INITIAL_LIVES;
+
+        // Cập nhật high score
+        if (score > highScore) {
+            highScore = score;
+        }
     }
+
 
     // Thêm điểm khi phá gạch
     public void addScore(Brick brick) {
@@ -35,7 +41,6 @@ public class GameStats {
 
         score += points;
 
-        // Cập nhật high score
         if (score > highScore) {
             highScore = score;
         }
@@ -67,6 +72,10 @@ public class GameStats {
 
     public int getHighScore() {
         return highScore;
+    }
+
+    public int setHighScore(int highScore) {
+        return this.highScore = highScore;
     }
 
     // Vẽ UI điểm số và mạng

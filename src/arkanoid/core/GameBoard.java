@@ -74,7 +74,7 @@ public class GameBoard extends Pane {
         gc = canvas.getGraphicsContext2D();
         getChildren().add(canvas);
         background = new Image("file:resource/image/background.png");
-        initLevel();
+        initNewGame();
         playMusic(4);
         startGameLoop();
 
@@ -96,7 +96,7 @@ public class GameBoard extends Pane {
 
             if (status.isMenu()) {
                 if (status.isInsidePlay(mx, my)) {
-                    initLevel();            // khởi tạo lại màn chơi
+                    initNewGame();            // khởi tạo game mới
                     status.toPlaying();     // chuyển sang trạng thái chơi
                     startGameLoop();        // bắt đầu game loop
                 } else if (status.isInsideExit(mx, my)) {
@@ -111,7 +111,7 @@ public class GameBoard extends Pane {
                     status.toPlaying();     // tiếp tục chơi
                     startGameLoop();
                 } else if (status.isInsideReplay(mx, my)) {
-                    initLevel();            // khởi tạo lại level hoàn chỉnh
+                    initNewGame();            // khởi tạo lại level hoàn chỉnh
                     status.toPlaying();     // quay lại trạng thái chơi
                     startGameLoop();        // khởi động lại vòng lặp
                 }
@@ -120,7 +120,7 @@ public class GameBoard extends Pane {
 
             if (status.isGameOver()) {
                 if (status.isInsideReplayOver(mx, my)) {
-                    initLevel();           // tạo lại brick, ball, paddle
+                    initNewGame();           // tạo lại brick, ball, paddle
                     status.toPlaying();    // quay lại chơi
                 } else if (status.isInsideExitOver(mx, my)) {
                     System.exit(0);        // thoát game
@@ -131,7 +131,7 @@ public class GameBoard extends Pane {
             if (status.isWin()) {
                 if (status.isInsideReplayWin(mx, my)) {
                     playMusic(4);
-                    initLevel();           // tạo lại brick, ball, paddle
+                    initNewGame();           // tạo lại brick, ball, paddle
                     status.toPlaying();    // quay lại chơi
                 } else if (status.isInsideExitWin(mx, my)) {
                     System.exit(0);        // thoát game
@@ -213,6 +213,10 @@ public class GameBoard extends Pane {
             gameStats.loseLife();
 
             if (!gameStats.hasLivesLeft()) {
+
+                if (gameStats.getScore() > gameStats.getHighScore()) {
+                    gameStats.setHighScore(gameStats.getScore());
+                }
 
                 playSE(3);
                 status.toGameOver();
@@ -396,9 +400,21 @@ public class GameBoard extends Pane {
             ball.setDx(-ball.getDx());
     }
 
+    private void initNewGame() {
+        gameOver = false;
+        gameStats.reset(); // Reset cả score
+        levelManager = new LevelManager(); // Reset về level 1
+        initLevelContent();
+    }
+
+
     public void initLevel() {
         gameOver = false;
-        gameStats.reset();
+        initLevelContent(); // Tạo màn chơi
+    }
+
+
+    private void initLevelContent() {
         paddle = new Paddle(250, 340, 100, 20);
 
         Ball mainBall = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
@@ -414,6 +430,7 @@ public class GameBoard extends Pane {
         unbreakableBricks.addAll(mapData.unbreakableBricks);
         balls.add(mainBall);
     }
+
 
     public void renderAll() {
         // Nếu đang chơi game -> vẽ ảnh background thật

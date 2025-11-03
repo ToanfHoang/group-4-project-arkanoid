@@ -23,6 +23,17 @@ public class LevelManager {
         return currentLevel;
     }
 
+    public void setCurrentLevel(int level) {
+        this.currentLevel = level;
+
+        // Đảm bảo level hợp lệ
+        if (this.currentLevel < 1) {
+            this.currentLevel = 1;
+        } else if (this.currentLevel > maxLevel) {
+            this.currentLevel = maxLevel;
+        }
+    }
+
     public void reset() {
         currentLevel = 1;
     }

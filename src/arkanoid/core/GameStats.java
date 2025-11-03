@@ -62,18 +62,30 @@ public class GameStats {
     }
 
     // Getters
-    public int getScore() {
-        return score;
-    }
+
 
     public int getLives() {
         return lives;
+    }
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public int getScore() {
+        return score;
+    }
+    public void setScore(int score) {
+        this.score = score;
+
+        // Cập nhật high score nếu cần
+        if (this.score > highScore) {
+            highScore = this.score;
+        }
     }
 
     public int getHighScore() {
         return highScore;
     }
-
     public int setHighScore(int highScore) {
         return this.highScore = highScore;
     }

@@ -96,11 +96,30 @@ public class GameBoard extends Pane {
 
             if (status.isMenu()) {
                 if (status.isInsidePlay(mx, my)) {
+                    SaveManager.deleteSave();
                     initNewGame();            // khởi tạo game mới
                     status.toPlaying();     // chuyển sang trạng thái chơi
                     startGameLoop();        // bắt đầu game loop
-                } else if (status.isInsideExit(mx, my)) {
+                }
+                else if (status.isInsideExit(mx, my)) {
                     System.exit(0);
+                }
+                else if (status.isInsideLoad(mx, my)) {  // ⬅️ THÊM PHẦN NÀY
+                    // Load game từ file save
+                    SaveGame saveData = SaveManager.loadGame();
+
+                    if (saveData != null) {
+                        // Có save file -> restore game state
+                        restoreGameState(saveData);
+                        status.toPlaying();
+                        startGameLoop();
+                        playSE(6); // Sound effect
+                    }
+                    else {
+                        // Không có save file -> hiển thị thông báo
+                        System.out.println("⚠️ No save data available!");
+                        playSE(3); // Fail sound
+                    }
                 }
                 return;
             }
@@ -149,6 +168,9 @@ public class GameBoard extends Pane {
                 if (status.isInsideContinueLevel(mx, my)) {
                     playMusic(4);
                     levelManager.nextLevel(); // load map tiếp theo
+
+                    autoSaveGame(); // tự động lưu game
+
                     initLevel();
                     resetBallAndPaddle();
                     status.toPlaying();
@@ -400,6 +422,35 @@ public class GameBoard extends Pane {
             ball.setDx(-ball.getDx());
     }
 
+    private void restoreGameState(SaveGame data) {
+        gameOver = false;
+
+        // Restore score, lives, highScore
+        gameStats.setScore(data.getScore());
+        gameStats.setLives(data.getLives());
+        gameStats.setHighScore(data.getHighScore());
+
+        // Restore level
+        levelManager.setCurrentLevel(data.getCurrentLevel());
+
+        // Load level đó
+        initLevelContent();
+
+        System.out.println("✅ Game restored: Level " + data.getCurrentLevel() +
+                ", Score: " + data.getScore() + ", Lives: " + data.getLives());
+    }
+
+    private void autoSaveGame() {
+        SaveGame saveData = new SaveGame(
+                gameStats.getScore(),
+                gameStats.getLives(),
+                levelManager.getCurrentLevel(),
+                gameStats.getHighScore()
+        );
+
+        SaveManager.saveGame(saveData);
+    }
+
     private void initNewGame() {
         gameOver = false;
         gameStats.reset(); // Reset cả score
@@ -488,12 +539,15 @@ public class GameBoard extends Pane {
         // MENU
         if (status.isMenu()) {
             boolean hoverPlay = status.isInsidePlay(mouseX, mouseY);
+            boolean hoverLoad = status.isInsideLoad(mouseX, mouseY);
             boolean hoverExit = status.isInsideExit(mouseX, mouseY);
 
             handleHoverSound("menu_play", hoverPlay);
+            handleHoverSound("menu_load", hoverLoad);
             handleHoverSound("menu_exit", hoverExit);
 
             if (hoverPlay) drawGlow(220, 220, 140, 50);
+            if (hoverLoad) drawGlow(220, 255, 140, 50);
             if (hoverExit) drawGlow(220, 290, 140, 50);
         }
 

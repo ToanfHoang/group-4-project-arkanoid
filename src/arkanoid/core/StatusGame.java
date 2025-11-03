@@ -18,6 +18,9 @@ public class StatusGame {
     private Image btnContinue = new Image("file:resource/image/continue.png");
     private Image btnReplay = new Image("file:resource/image/replay.png");
     private Image btnExit = new Image("file:resource/image/exit.png");
+
+    private Image btnLoad = new Image("file:resource/image/load.png");
+
     private Image WinGame  = new Image("file:resource/image/win_game.png");
     private Image completeBackground = new Image("file:resource/image/complete.png");
     private Image btnLevelContinue = new Image("file:resource/image/continue.png");
@@ -25,6 +28,8 @@ public class StatusGame {
 
     private final double contLevelX = 220, contLevelY = 230, contLevelW = 140, contLevelH = 50;
     private final double exitLevelX = 220, exitLevelY = 300, exitLevelW = 140, exitLevelH = 50;
+
+    private final double loadX = 220, loadY = 255, loadW = 140, loadH = 50;
 
     private GameState state = GameState.MENU;
 
@@ -79,6 +84,10 @@ public class StatusGame {
         return x >= exitWinX && x <= exitWinX + exitWinW && y >= exitWinY && y <= exitWinY + exitWinH;
     }
 
+    public boolean isInsideLoad(double x, double y) {
+        return x >= loadX && x <= loadX + loadW && y >= loadY && y <= loadY + loadH;
+    }
+
     public boolean isMenu()     { return state == GameState.MENU; }
     public boolean isPlaying()  { return state == GameState.PLAYING; }
     public boolean isPaused()   { return state == GameState.PAUSED; }
@@ -113,6 +122,9 @@ public class StatusGame {
         if (isMenu()) {
             gc.drawImage(menuBackground, 0, 0, w, h);
             gc.drawImage(btnPlay, playX, playY, playW, playH);
+
+            gc.drawImage(btnLoad, loadX, loadY, loadW, loadH);
+
             gc.drawImage(btnExit, exitX, exitY, exitW, exitH);
         }
         else if (isPaused()) {

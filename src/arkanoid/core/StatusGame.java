@@ -2,9 +2,6 @@ package arkanoid.core;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextBoundsType;
 import javafx.scene.image.Image;
 
 public class StatusGame {
@@ -18,23 +15,31 @@ public class StatusGame {
     private Image btnContinue = new Image("file:resource/image/continue.png");
     private Image btnReplay = new Image("file:resource/image/replay.png");
     private Image btnExit = new Image("file:resource/image/exit.png");
-
     private Image btnLoad = new Image("file:resource/image/load.png");
-
     private Image WinGame  = new Image("file:resource/image/win_game.png");
     private Image completeBackground = new Image("file:resource/image/complete.png");
     private Image btnLevelContinue = new Image("file:resource/image/continue.png");
     private Image btnLevelExit = new Image("file:resource/image/exit.png");
-
-    private final double contLevelX = 220, contLevelY = 230, contLevelW = 140, contLevelH = 50;
-    private final double exitLevelX = 220, exitLevelY = 300, exitLevelW = 140, exitLevelH = 50;
-
-    private final double loadX = 220, loadY = 255, loadW = 140, loadH = 50;
-
     private GameState state = GameState.MENU;
 
-    private final double playX = 220, playY = 220, playW = 140, playH = 50;
-    private final double exitX  = 220, exitY  = 290, exitW  = 140, exitH  = 50;
+    public boolean isMenu()     { return state == GameState.MENU; }
+    public boolean isPlaying()  { return state == GameState.PLAYING; }
+    public boolean isPaused()   { return state == GameState.PAUSED; }
+    public boolean isGameOver() { return state == GameState.GAME_OVER; }
+    public boolean isWin()      { return state == GameState.WIN; }
+    public void toLevelComplete() { state = GameState.LEVEL_COMPLETE; }
+    public boolean isLevelComplete() { return state == GameState.LEVEL_COMPLETE; }
+
+    public void toPlaying()  { state = GameState.PLAYING; }
+    public void toPaused()   { state = GameState.PAUSED; }
+    public void toGameOver() { state = GameState.GAME_OVER; }
+    public void toWin()      { state = GameState.WIN; }
+
+
+    private final double playX = 220, playY = 200, playW = 140, playH = 50;
+    private final double loadX = 220, loadY = 265, loadW = 140, loadH = 50;
+    private final double exitX = 220, exitY = 330, exitW = 140, exitH = 50;
+
 
     private final double contX = 220, contY = 200, contW = 140, contH = 50;
     private final double replayX = 220, replayY = 270, replayW = 140, replayH = 50;
@@ -45,8 +50,9 @@ public class StatusGame {
     private final double replayWinX = 220, replayWinY = 230, replayWinW = 140, replayWinH = 50;
     private final double exitWinX = 220, exitWinY = 300, exitWinW = 140, exitWinH = 50;
 
-    public void toLevelComplete() { state = GameState.LEVEL_COMPLETE; }
-    public boolean isLevelComplete() { return state == GameState.LEVEL_COMPLETE; }
+    private final double contLevelX = 220, contLevelY = 230, contLevelW = 140, contLevelH = 50;
+    private final double exitLevelX = 220, exitLevelY = 300, exitLevelW = 140, exitLevelH = 50;
+
 
     public boolean isInsidePlay(double x, double y) {
         return x >= playX && x <= playX + playW && y >= playY && y <= playY + playH;
@@ -87,13 +93,6 @@ public class StatusGame {
     public boolean isInsideLoad(double x, double y) {
         return x >= loadX && x <= loadX + loadW && y >= loadY && y <= loadY + loadH;
     }
-
-    public boolean isMenu()     { return state == GameState.MENU; }
-    public boolean isPlaying()  { return state == GameState.PLAYING; }
-    public boolean isPaused()   { return state == GameState.PAUSED; }
-    public boolean isGameOver() { return state == GameState.GAME_OVER; }
-    public boolean isWin()      { return state == GameState.WIN; }
-
     public boolean isInsideContinueLevel(double x, double y) {
         return x >= contLevelX && x <= contLevelX + contLevelW
                 && y >= contLevelY && y <= contLevelY + contLevelH;
@@ -103,10 +102,6 @@ public class StatusGame {
                 && y >= exitLevelY && y <= exitLevelY + exitLevelH;
     }
 
-    public void toPlaying()  { state = GameState.PLAYING; }
-    public void toPaused()   { state = GameState.PAUSED; }
-    public void toGameOver() { state = GameState.GAME_OVER; }
-    public void toWin()      { state = GameState.WIN; }
 
     public void renderOverlay(GraphicsContext gc, double w, double h) {
         if (isPlaying()) return;

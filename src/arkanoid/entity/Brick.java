@@ -7,15 +7,20 @@ import javafx.scene.image.Image;
 import java.util.Random;
 
 public class Brick {
-    private double x, y, width, height;
     public int originalHitPoints;
     public boolean dropPowerup = false;
+    public int hitPoints = 1;// số lần va chạm để phá hủy gạch
+
+    private double x, y, width, height;
     private boolean destroyed = false; // kiểm tra xem gạch có bị phá hủy hay không
     private Image image;
-    public int hitPoints = 1; // số lần va chạm để phá hủy gạch
-
     private Random rand;
     private int powerup = 0;
+
+    private Image superBrickFull;
+    private Image superBrickCrack1;
+    private Image superBrickCrack2;
+
 
     private BrickType type;
     private Color currentColor;
@@ -35,8 +40,7 @@ public class Brick {
         STRONG(2, Color.DARKRED, 20),            // Gạch cứng - 2 hits
         SUPER_STRONG(3, Color.DARKVIOLET, 30),   // Gạch siêu cứng - 3 hits
         EXPLOSIVE(1, Color.ORANGE, 15),          // Gạch nổ - phá các gạch xung quanh
-        UNBREAKABLE(999, Color.GRAY, 0),         // Gạch không thể phá
-        MOVING(1, Color.LIGHTBLUE, 15);       // Gạch di chuyển cho boss
+        UNBREAKABLE(999, Color.GRAY, 0), ;        // Gạch không thể phá
 
 
         private final int hitPoints;
@@ -97,6 +101,12 @@ public class Brick {
         else if(type != BrickType.UNBREAKABLE) {
             powerup = rand.nextInt(10); // 1/6 tỷ lệ
         }
+        if (type == BrickType.SUPER_STRONG) {
+            superBrickFull  = new Image("file:resource/image/strong_brick.png");
+            superBrickCrack1 = new Image("file:resource/image/strong1_brick.png");
+            superBrickCrack2 = new Image("file:resource/image/strong2_brick.png");
+        }
+
         // Load image phù hợp với loại gạch
         try {
             switch (type) {
@@ -111,9 +121,6 @@ public class Brick {
                     break;
                 case EXPLOSIVE:
                     image = new Image("file:resource/image/exploding_brick.png");
-                    break;
-                case MOVING:
-                    //image = new Image("file:resource/image/brick.png");
                     break;
                 case UNBREAKABLE:
                     image = new Image("file:resource/image/unbreakable_brick.png");
@@ -131,6 +138,21 @@ public class Brick {
             gc.fillRect(x, y, width, height);
             if (image != null) {
                 gc.drawImage(image, x, y, width, height);
+            }
+            if (type == BrickType.SUPER_STRONG) {
+                if (hitPoints >= 3) {
+                    gc.drawImage(superBrickFull, x, y, width, height);
+                } else if (hitPoints == 2) {
+                    gc.drawImage(superBrickCrack1, x, y, width, height);
+                } else if (hitPoints == 1) {
+                    gc.drawImage(superBrickCrack2, x, y, width, height);
+                }
+            } else {
+                gc.drawImage(image, x, y, width, height);
+            }
+            if (type == BrickType.SUPER_STRONG && hitPoints <= 0) {
+                gc.setFill(Color.rgb(255, 255, 255, 0.4));
+                gc.fillRect(x, y, width, height);
             }
 
             // Hiệu ứng đặc biệt cho gạch nổ
@@ -157,14 +179,11 @@ public class Brick {
 
         if (hitPoints >= 1) {
             hitPoints--;
-
             if (type == BrickType.STRONG && hitPoints == 1) {
                 try {
                     Image cracked = new Image("file:resource/image/crack_brick.png");
                     if (cracked.getWidth() > 0) image = cracked;
-                } catch (Exception e) {
-                    // nếu không tìm được ảnh cracked thì im lặng (giữ ảnh cũ)
-                }
+                } catch (Exception e) {}
             }
 
             if (hitPoints == 0) {

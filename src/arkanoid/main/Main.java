@@ -14,14 +14,21 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+    private final int WIDTH = 600;
+    private final int HEIGHT = 400;
+
     @Override
     public void start(Stage stage) {
-        int WIDTH = 600;
-        int HEIGHT = 400;
         GameBoard board = new GameBoard(WIDTH, HEIGHT);
         Scene scene = new Scene(board, WIDTH, HEIGHT);
         stage.setScene(scene);
         stage.show();
         board.renderAll();
+
+
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

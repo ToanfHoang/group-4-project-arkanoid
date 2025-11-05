@@ -9,11 +9,11 @@
 
 ## Phân chia công việc
 
-| Thành viên | Phần việc | Trạng thái | Ghi chú |
-|------------|-----------|------------|---------|
+| Thành viên | Phần việc | Trạng thái   | Ghi chú |
+|------------|-----------|--------------|---------|
 | Sơn Lê     | Chạm gạch | ✅ Hoàn thành | Cần test collision logic |
 | Sơn Lê     | Powerup   | ✅ Hoàn thành | Bao gồm multi-ball, growth, fireball |
-| Sơn Lê     | JUnit tests | 🔄 Đang làm | Kiểm tra Ball và Brick |
+| Sơn Lê     | JUnit tests | 🔄 Đang làm  | Kiểm tra Ball và Brick |
 | Sơn Lê     | Ball      | ✅ Hoàn thành | Collision với paddle đã xong, rơi ra ngoài cần test |
 | Tòn        | Sound     | ✅ Hoàn thành | Âm thanh khi va chạm, powerup, button |
 | Tòn        | Glow button | ✅ Hoàn thành | Hiệu ứng UI |
@@ -23,7 +23,7 @@
 | Tuấn       | Paddle    | ✅ Hoàn thành | Di chuyển giới hạn canvas |
 | Tuấn       | Va chạm   | ✅ Hoàn thành | Paddle-Ball collision logic |
 | Tuấn       | GameLoop  | ✅ Hoàn thành | AnimationTimer, update/render các đối tượng |
-| Tuấn       | Lưu/Load game  | ⬜ = chưa làm  | Lưu trạng thái game hiện tại, load lại từ file |
+| Tuấn       | Lưu/Load game  | ✅ Hoàn thành | Lưu trạng thái game hiện tại, load lại từ file |
 
 ---
 

@@ -11,10 +11,11 @@ import java.awt.*;
 
 public class Powerup extends GameObject {
     public boolean remove = false;
-    private int speed = 2;
+    private double speed = 0.5;
     private Image image;
-    public int powerup;
     private final double canvasHeight;
+
+    public int powerup;
 
     public Powerup(int x, int y, int type, double canvasHeight) {
         super(x, y, 25, 25);

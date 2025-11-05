@@ -32,7 +32,9 @@ public abstract class MovableObject {
     }
 
     // Phương thức trừu tượng bắt buộc các lớp con phải implement
-    public void update() {    };
+    public void update() {
+    }
+
     public abstract void render(GraphicsContext gc);
 
     // Getters
@@ -52,25 +54,7 @@ public abstract class MovableObject {
         return height;
     }
 
-    public double getDx() {
-        return dx;
-    }
-
-    public double getDy() {
-        return dy;
-    }
-
-
-
     // Setters
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
     public void setDx(double dx) {
         this.dx = dx;
     }
@@ -78,13 +62,4 @@ public abstract class MovableObject {
     public void setDy(double dy) {
         this.dy = dy;
     }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
 }

@@ -12,8 +12,6 @@ public class Paddle extends MovableObject {
         this.image = new Image("file:resource/image/paddle.png");
     }
 
-
-
     @Override
     public void render(GraphicsContext gc) {
         gc.drawImage(image, x, y, width, height);
@@ -26,6 +24,21 @@ public class Paddle extends MovableObject {
             this.x = boardWidth - width;
         } else {
             this.x = newX;
+        }
+    }
+
+    public boolean checkPowerupCollision(Powerup powerup) {
+        return powerup.getX() < this.x + this.width &&
+                powerup.getX() + powerup.getWidth() > this.x &&
+                powerup.getY() < this.y + this.height &&
+                powerup.getY() + powerup.getHeight() > this.y;
+    }
+
+    public void grow(int amount) {
+        this.width += amount;
+        // Có thể thêm giới hạn tối đa nếu cần
+        if (this.width > 200) { // Ví dụ: giới hạn max 200
+            this.width = 200;
         }
     }
 }

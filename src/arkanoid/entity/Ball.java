@@ -5,7 +5,6 @@ import arkanoid.sound.Sound;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-import java.util.List;
 import java.util.TimerTask;
 
 public class Ball extends MovableObject {
@@ -14,16 +13,14 @@ public class Ball extends MovableObject {
     private final double canvasHeight;
 
     private double currentSpeed = 0.5;
-    private double normalSpeed = 1.0; // Tốc độ bình thường
-    private double fireballSpeed = 2.0; // Tốc độ khi fireball
+    private final double normalSpeed = 1.0; // Tốc độ bình thường
 
-    private boolean attached = true; // Bóng ban đầu gắn vào paddle
+    private boolean attached; // Bóng ban đầu gắn vào paddle
     private boolean fellOut = false;
 
     private final Sound sound = new Sound();
     public boolean onFire = false;
-    private int fireSec = 0;
-    private Image fireballImage;
+    private final Image fireballImage;
     private java.util.Timer timer = new java.util.Timer();
 
     public Ball(double x, double y, double radius, double canvasWidth, double canvasHeight) {
@@ -52,24 +49,7 @@ public class Ball extends MovableObject {
             return; // Nếu bóng đang gắn vào paddle, không di chuyển
         }
         move();
-
-        // Xử lý va chạm với tường trái/phải
-        if (x <= 0 || x + width >= canvasWidth) {
-            dx = -dx;
-            playSE(0);
-        }
-
-        // Xử lý va chạm với tường trên
-        if (y <= 0) {
-            dy = -dy;
-            playSE(0);
-        }
-
-        // Xử lý khi bóng rơi xuống đáy
-        if (y + height >= canvasHeight) {
-            fellOut = true;
-            // Đánh dấu bóng đã rơi ra ngoài
-        }
+        checkWallCollision();
     }
 
     @Override
@@ -81,7 +61,7 @@ public class Ball extends MovableObject {
         return fellOut;
     }
 
-    public boolean checkPaddleCollision(Paddle paddle) {
+    public void checkPaddleCollision(Paddle paddle) {
         // Kiểm tra va chạm với paddle
         if (y + height >= paddle.getY() &&
                 y + height <= paddle.getY() + paddle.getHeight() &&
@@ -110,13 +90,10 @@ public class Ball extends MovableObject {
             dx = currentSpeed * Math.sin(angle);
             dy = -currentSpeed * Math.cos(angle);
         }
-        return false;
     }
 
     public void stopSound() {
-        if (sound != null) {
-            sound.stop();
-        }
+        sound.stop();
     }
 
     public void reset() {
@@ -134,12 +111,6 @@ public class Ball extends MovableObject {
             timer.cancel();
             timer = new java.util.Timer();
         }
-    }
-
-    // Tăng tốc độ cơ bản - gọi khi phá gạch
-    public void increaseSpeed() {
-        currentSpeed = 2;  // tăng speed
-        updateVelocity();
     }
 
     public double getSpeed() {
@@ -181,12 +152,12 @@ public class Ball extends MovableObject {
 
     public void fireBall(int seconds) {
         if (!onFire) {
-            fireSec = seconds;
             onFire = true;
             this.image = fireballImage; // Đổi hình ảnh
-            currentSpeed = fireballSpeed;
+            // Tốc độ khi fireball
+            currentSpeed = 2.0;
             updateVelocity(); // Cập nhật dx, dy
-            timer.schedule(new RemindTask(), seconds * 1000);
+            timer.schedule(new RemindTask(), seconds * 1000L);
         }
     }
 
@@ -212,5 +183,69 @@ public class Ball extends MovableObject {
 
     public boolean isOnFire() {
         return onFire;
+    }
+
+    // Kiểm tra va chạm với gạch
+    public boolean checkBrickCollision(Brick brick) {
+        return x < brick.getX() + brick.getWidth() &&
+                x + width > brick.getX() &&
+                y < brick.getY() + brick.getHeight() &&
+                y + height > brick.getY();
+    }
+
+    // Xử lý va chạm với gạch
+    public void handleBrickCollision(Brick brick) {
+        double overlapLeft = (x + width) - brick.getX();
+        double overlapRight = (brick.getX() + brick.getWidth()) - x;
+        double overlapTop = (y + height) - brick.getY();
+        double overlapBottom = (brick.getY() + brick.getHeight()) - y;
+
+        double minOverlap = Math.min(Math.min(overlapLeft, overlapRight),
+                Math.min(overlapTop, overlapBottom));
+
+        if (minOverlap == overlapTop || minOverlap == overlapBottom)
+            dy = -dy;
+        else
+            dx = -dx;
+    }
+
+    public void checkWallCollision() {
+        // Xử lý va chạm với tường trái/phải
+        if (x <= 0 || x + width >= canvasWidth) {
+            dx = -dx;
+            playSE(0);
+        }
+
+        // Xử lý va chạm với tường trên
+        if (y <= 0) {
+            dy = -dy;
+            playSE(0);
+        }
+
+        // Xử lý khi bóng rơi xuống đáy
+        if (y + height >= canvasHeight) {
+            fellOut = true;
+        }
+    }
+
+    public static Ball createExtraBall(Paddle paddle, double canvasWidth, double canvasHeight,
+                                       boolean fireActive) {
+        Ball newBall = new Ball(
+                paddle.getX() + paddle.getWidth() / 2 - 10,
+                paddle.getY() - 20,
+                10, canvasWidth, canvasHeight
+        );
+
+        newBall.releaseFromPaddle();
+
+        double angle = Math.toRadians(-60 + Math.random() * 120);
+        newBall.setDx(newBall.getSpeed() * Math.sin(angle));
+        newBall.setDy(-Math.abs(newBall.getSpeed() * Math.cos(angle)));
+
+        if (fireActive) {
+            newBall.fireBall(6);
+        }
+
+        return newBall;
     }
 }

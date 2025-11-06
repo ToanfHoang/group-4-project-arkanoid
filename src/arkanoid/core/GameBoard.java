@@ -362,7 +362,7 @@ public class GameBoard extends Pane {
 
 
     private void initLevelContent() {
-        paddle = new Paddle(250, 340, 100, 20);
+        paddle = new Paddle(250, 340, 100, 50);
 
         Ball mainBall = new Ball(295, 350, 10, canvas.getWidth(), canvas.getHeight());
         mainBall.attachToPaddle(paddle);

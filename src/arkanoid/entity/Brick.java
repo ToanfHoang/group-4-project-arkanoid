@@ -23,6 +23,9 @@ public class Brick {
 
     private final BrickType type;
     private boolean isExploding = false;
+    private Image superBrickFull;
+    private Image superBrickCrack1;
+    private Image superBrickCrack2;
 
     public int getHitpoint() {
         return hitPoints;
@@ -85,6 +88,11 @@ public class Brick {
         } else if (type != BrickType.UNBREAKABLE) {
             powerup = rand.nextInt(10); // 1/6 tỷ lệ
         }
+        if (type == BrickType.SUPER_STRONG) {
+            superBrickFull  = new Image("file:resource/image/strong_brick.png");
+            superBrickCrack1 = new Image("file:resource/image/strong1_brick.png");
+            superBrickCrack2 = new Image("file:resource/image/strong2_brick.png");
+        }
         // Load image phù hợp với loại gạch
         try {
             switch (type) {
@@ -99,9 +107,6 @@ public class Brick {
                     break;
                 case EXPLOSIVE:
                     image = new Image("file:resource/image/exploding_brick.png");
-                    break;
-                case MOVING:
-                    //image = new Image("file:resource/image/brick.png");
                     break;
                 case UNBREAKABLE:
                     image = new Image("file:resource/image/unbreakable_brick.png");
@@ -119,6 +124,21 @@ public class Brick {
             gc.fillRect(x, y, width, height);
             if (image != null) {
                 gc.drawImage(image, x, y, width, height);
+            }
+            if (type == BrickType.SUPER_STRONG) {
+                if (hitPoints >= 3) {
+                    gc.drawImage(superBrickFull, x, y, width, height);
+                } else if (hitPoints == 2) {
+                    gc.drawImage(superBrickCrack1, x, y, width, height);
+                } else if (hitPoints == 1) {
+                    gc.drawImage(superBrickCrack2, x, y, width, height);
+                }
+            } else {
+                gc.drawImage(image, x, y, width, height);
+            }
+            if (type == BrickType.SUPER_STRONG && hitPoints <= 0) {
+                gc.setFill(Color.rgb(255, 255, 255, 0.4));
+                gc.fillRect(x, y, width, height);
             }
 
             // Hiệu ứng đặc biệt cho gạch nổ

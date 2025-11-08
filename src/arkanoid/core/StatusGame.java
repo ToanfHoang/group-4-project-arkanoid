@@ -40,7 +40,6 @@ public class StatusGame {
     private final double loadX = 220, loadY = 265, loadW = 140, loadH = 50;
     private final double exitX = 220, exitY = 330, exitW = 140, exitH = 50;
 
-
     private final double contX = 220, contY = 200, contW = 140, contH = 50;
     private final double replayX = 220, replayY = 270, replayW = 140, replayH = 50;
 

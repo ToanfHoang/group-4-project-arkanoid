@@ -608,7 +608,7 @@ public class GameBoard extends Pane {
         }
         hoverState.put(key, isHovering);
     }
-
+/// / check
     public Paddle getPaddle() {
         return paddle;
     }

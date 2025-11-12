@@ -13,6 +13,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -294,8 +296,20 @@ public class GameBoard extends Pane {
         if (Brick.areAllBricksDestroyed(bricks)) {
             playSE(5);
             bgm.stop();
-            status.toLevelComplete();
-            gameLoop.stop();
+
+            int currentLevel = levelManager.getCurrentLevel();
+            // Nếu hoàn tất map 3 => WIN, còn không thì Level Complete
+            if (currentLevel >= 3) {
+                // cập nhật high score nếu cần
+                if (gameStats.getScore() > gameStats.getHighScore()) {
+                    gameStats.setHighScore(gameStats.getScore());
+                }
+                status.toWin();
+                if (gameLoop != null) gameLoop.stop();
+            } else {
+                status.toLevelComplete();
+                if (gameLoop != null) gameLoop.stop();
+            }
         }
 
     }
@@ -410,6 +424,24 @@ public class GameBoard extends Pane {
 
         // Vẽ lớp overlay (menu, pause, game over)
         status.renderOverlay(gc, canvas.getWidth(), canvas.getHeight());
+
+        if (status.isWin()) {
+            gc.save();
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 28));
+            String hsText = "High Score: " + gameStats.getHighScore();
+
+            // đo width để căn giữa (dùng Text helper)
+            javafx.scene.text.Text helper = new javafx.scene.text.Text(hsText);
+            helper.setFont(gc.getFont());
+            double textWidth = helper.getLayoutBounds().getWidth();
+
+            double centerX = canvas.getWidth() / 2.0;
+            double textY = 180; // bạn có thể điều chỉnh để phù hợp với background Win
+            gc.fillText(hsText, centerX - textWidth / 2.0, textY);
+            gc.restore();
+        }
+
         drawHoverEffect();
     }
 
@@ -442,9 +474,9 @@ public class GameBoard extends Pane {
             handleHoverSound("menu_load", hoverLoad);
             handleHoverSound("menu_exit", hoverExit);
 
-            if (hoverPlay) drawGlow(220, 220, 140, 50);
-            if (hoverLoad) drawGlow(220, 255, 140, 50);
-            if (hoverExit) drawGlow(220, 290, 140, 50);
+            if (hoverPlay) drawGlow(220, 200, 140, 50);
+            if (hoverLoad) drawGlow(220, 265, 140, 50);
+            if (hoverExit) drawGlow(220, 330, 140, 50);
         }
 
         // PAUSED

@@ -124,6 +124,11 @@ public class GameBoard extends Pane {
                 if (status.isInsideContinue(mx, my)) {
                     playMusic(4);
                     status.toPlaying();     // tiếp tục chơi
+
+                    if (gameLoop != null) {
+                        gameLoop.stop();
+                    }
+
                     startGameLoop();
                 } else if (status.isInsideReplay(mx, my)) {
                     initNewGame();            // khởi tạo lại level hoàn chỉnh

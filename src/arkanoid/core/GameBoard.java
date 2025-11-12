@@ -353,7 +353,7 @@ public class GameBoard extends Pane {
 
     public void freezePaddle() {
         paddle.freeze(5000); // Đóng băng 5 giây
-        System.out.println("ZA WARUDO HANAMERO TOKYO TOMERUNDAAAAAA WRYYYYYYYYYYYYYYYYYYYY");
+        System.out.println("ZA WARUDO HANAMERO TOKI WO TOMERUNDAAAAAA WRYYYYYYYYYYYYYYYYYYYY");
     }
 
     public void activateDoubleScore() {

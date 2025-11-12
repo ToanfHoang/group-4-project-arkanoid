@@ -4,6 +4,7 @@ import arkanoid.core.GameBoard;
 import arkanoid.core.GameObject;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import arkanoid.entity.powerup.PowerupStrategy;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -12,31 +13,15 @@ import java.util.List;
 public class Powerup extends GameObject {
     public boolean remove = false;
     private Image image;
+    private PowerupStrategy strategy;
     public int powerup;
     protected final double canvasHeight;
 
-    public Powerup(int x, int y, int type, double canvasHeight) {
+    public Powerup(int x, int y, PowerupStrategy strategy, double canvasHeight) {
         super(x, y, 25, 25);
-        this.powerup = type;
+        this.strategy = strategy;
         this.canvasHeight = canvasHeight;
-
-        if (powerup == 1) { //MultiBall
-            image = new Image("file:resource/image/Buff.png");
-        } else if (powerup == 2) { //GrowPaddle
-            image = new Image("file:resource/image/Buff.png");
-        } else if (powerup == 3) { //FireBall
-            image = new Image("file:resource/image/Buff.png");
-        } else if (powerup == 4) { // -1 máu
-            image = new Image("file:resource/image/Debuff.png");
-        } else if (powerup == 5) { // +1 máu
-            image = new Image("file:resource/image/Buff.png");
-        } else if (powerup == 6) { // Đóng băng paddle
-            image = new Image("file:resource/image/Debuff.png");
-        } else if (powerup == 7) { // X2 điểm
-            image = new Image("file:resource/image/Buff.png");
-        }
-
-
+        this.image = new Image(strategy.getImagePath());
     }
 
     @Override
@@ -80,28 +65,6 @@ public class Powerup extends GameObject {
     }
 
     public void applyEffect(GameBoard gameBoard) {
-        switch (this.powerup) {
-            case 1: // Multi-ball
-                gameBoard.createExtraBalls();
-                break;
-            case 2: // Growth - paddle
-                gameBoard.getPaddle().grow(15);
-                break;
-            case 3: // Fireball
-                gameBoard.activateFireball();
-                break;
-            case 4: // -1 máu
-                gameBoard.loseLife();
-                break;
-            case 5: // +1 máu
-                gameBoard.gainLife();
-                break;
-            case 6: // Đóng băng paddle
-                gameBoard.freezePaddle();
-                break;
-            case 7: // X2 điểm
-                gameBoard.activateDoubleScore();
-                break;
-        }
+        strategy.applyEffect(gameBoard);
     }
 }

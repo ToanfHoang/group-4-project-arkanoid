@@ -4,6 +4,7 @@ import arkanoid.core.GameStats;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
+import arkanoid.entity.powerup.PowerupFactory;
 
 import java.util.List;
 import java.util.Random;
@@ -81,12 +82,12 @@ public class Brick {
         Random rand = new Random();
 
         // Tăng tỷ lệ powerup cho gạch khó hơn
-        if (type == BrickType.STRONG || type == BrickType.SUPER_STRONG) {
-            powerup = rand.nextInt(15);
-        } else if (type == BrickType.EXPLOSIVE) {
-            powerup = rand.nextInt(15);
-        } else if (type != BrickType.UNBREAKABLE) {
-            powerup = rand.nextInt(10);
+        if (type == BrickType.SUPER_STRONG) {
+            if (rand.nextDouble() < 0.45) powerup = rand.nextInt(7) + 1; // 40%
+        } else if (type == BrickType.STRONG) {
+            if (rand.nextDouble() < 0.4) powerup = rand.nextInt(7) + 1; // 30%
+        } else if (type == BrickType.NORMAL) {
+            if (rand.nextDouble() < 0.35) powerup = rand.nextInt(7) + 1; // 15%
         }
         if (type == BrickType.SUPER_STRONG) {
             superBrickFull  = new Image("file:resource/image/strong_brick.png");
@@ -239,7 +240,7 @@ public class Brick {
 
     public Powerup createPowerupIfNeeded(double canvasHeight) {
         if (this.isDestroyed() && this.hasPowerup() > 0) {
-            return new Powerup(
+            return PowerupFactory.createPowerup(
                     (int) (this.getX() + this.getWidth() / 2),
                     (int) (this.getY() + this.getHeight() / 2),
                     this.hasPowerup(),

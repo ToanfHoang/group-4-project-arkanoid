@@ -84,7 +84,7 @@ public class Brick {
         if (type == BrickType.STRONG || type == BrickType.SUPER_STRONG) {
             powerup = rand.nextInt(15);
         } else if (type == BrickType.EXPLOSIVE) {
-            powerup = rand.nextInt(15)
+            powerup = rand.nextInt(15);
         } else if (type != BrickType.UNBREAKABLE) {
             powerup = rand.nextInt(10);
         }

@@ -20,13 +20,22 @@ public class Powerup extends GameObject {
         this.powerup = type;
         this.canvasHeight = canvasHeight;
 
-        if (powerup == 1) {
-            image = new Image("file:resource/image/PUMultiBall.png");
-        } else if (powerup == 2) {
-            image = new Image("file:resource/image/PUGrowth.png");
-        } else if (powerup == 3) {
-            image = new Image("file:resource/image/PUFireball.png");
+        if (powerup == 1) { //MultiBall
+            image = new Image("file:resource/image/Buff.png");
+        } else if (powerup == 2) { //GrowPaddle
+            image = new Image("file:resource/image/Buff.png");
+        } else if (powerup == 3) { //FireBall
+            image = new Image("file:resource/image/Buff.png");
+        } else if (powerup == 4) { // -1 máu
+            image = new Image("file:resource/image/Debuff.png");
+        } else if (powerup == 5) { // +1 máu
+            image = new Image("file:resource/image/Buff.png");
+        } else if (powerup == 6) { // Đóng băng paddle
+            image = new Image("file:resource/image/Debuff.png");
+        } else if (powerup == 7) { // X2 điểm
+            image = new Image("file:resource/image/Buff.png");
         }
+
 
     }
 
@@ -80,6 +89,18 @@ public class Powerup extends GameObject {
                 break;
             case 3: // Fireball
                 gameBoard.activateFireball();
+                break;
+            case 4: // -1 máu
+                gameBoard.loseLife();
+                break;
+            case 5: // +1 máu
+                gameBoard.gainLife();
+                break;
+            case 6: // Đóng băng paddle
+                gameBoard.freezePaddle();
+                break;
+            case 7: // X2 điểm
+                gameBoard.activateDoubleScore();
                 break;
         }
     }

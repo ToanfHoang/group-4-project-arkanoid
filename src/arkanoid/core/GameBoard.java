@@ -332,6 +332,35 @@ public class GameBoard extends Pane {
         System.out.println("Fireball activated!");
     }
 
+    public void loseLife() {
+        gameStats.loseLife();
+
+        if (!gameStats.hasLivesLeft()) {
+            if (gameStats.getScore() > gameStats.getHighScore()) {
+                gameStats.setHighScore(gameStats.getScore());
+            }
+            status.toGameOver();
+            stopMusic();
+            gameOver = true;
+        }
+        System.out.println("lose1Life activated!");
+    }
+
+    public void gainLife() {
+        gameStats.gainLife();
+        System.out.println("Gain1Life activated!");
+    }
+
+    public void freezePaddle() {
+        paddle.freeze(5000); // Đóng băng 5 giây
+        System.out.println("ZA WARUDO HANAMERO TOKYO TOMERUNDAAAAAA WRYYYYYYYYYYYYYYYYYYYY");
+    }
+
+    public void activateDoubleScore() {
+        gameStats.activateDoubleScore(10000); // X2 điểm trong 10 giây
+        System.out.println("DoubleScore activated!");
+    }
+
     private void restoreGameState(SaveGame data) {
         gameOver = false;
 

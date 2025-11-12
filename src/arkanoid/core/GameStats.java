@@ -13,6 +13,8 @@ public class GameStats {
     private int score;
     private int lives;
     private int highScore;
+    private boolean doubleScoreActive = false;
+    private long doubleScoreEndTime = 0;
 
     // Số mạng ban đầu
     private static final int INITIAL_LIVES = 3;
@@ -31,6 +33,14 @@ public class GameStats {
         }
     }
 
+    public void activateDoubleScore(long duration) {
+        this.doubleScoreActive = true;
+        this.doubleScoreEndTime = System.currentTimeMillis() + duration;
+    }
+
+    public void gainLife() {
+        lives++;
+    }
 
     // Thêm điểm khi phá gạch
     public void addScore(Brick brick) {
@@ -39,7 +49,15 @@ public class GameStats {
             points = brick.getType().getScore();
         }
 
+        if (doubleScoreActive) {
+            points *= 2;
+        }
+
         score += points;
+
+        if (doubleScoreActive && System.currentTimeMillis() > doubleScoreEndTime) {
+            doubleScoreActive = false;
+        }
 
         if (score > highScore) {
             highScore = score;
@@ -108,9 +126,21 @@ public class GameStats {
         gc.fillText("LIVES: ", canvasWidth - 150, 25);
 
         // Vẽ icon trái tim cho mạng
-        for (int i = 0; i < lives; i++) {
+        int maxHeartsToShow = Math.min(lives, 2);
+        for (int i = 0; i < maxHeartsToShow; i++) {
             gc.setFill(Color.RED);
             gc.fillText("❤", canvasWidth - 70 + i * 25, 25);
+        }
+        if (lives > 2) {
+            gc.fillText("+" + (lives - 2), canvasWidth - 25, 24);
+        }
+
+        if (doubleScoreActive) {
+            gc.setFill(Color.GOLD);
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+            long timeLeft = (doubleScoreEndTime - System.currentTimeMillis()) / 1000;
+            if (timeLeft < 0) timeLeft = 0;
+            gc.fillText("2x SCORE! " + timeLeft + "s", canvasWidth - 150, 50);
         }
     }
 }

@@ -27,7 +27,6 @@ public class Brick {
     private Image superBrickFull;
     private Image superBrickCrack1;
     private Image superBrickCrack2;
-    private static Image explosionImage;
 
     public int getHitpoint() {
         return hitPoints;
@@ -95,15 +94,6 @@ public class Brick {
             superBrickCrack1 = new Image("file:resource/image/strong1_brick.png");
             superBrickCrack2 = new Image("file:resource/image/strong2_brick.png");
         }
-
-        if (type == BrickType.EXPLOSIVE && explosionImage == null) {
-            try {
-                explosionImage = new Image("file:resource/image/explodingEffect.png");
-            } catch (Exception e) {
-                explosionImage = null;
-            }
-        }
-
         // Load image phù hợp với loại gạch
         try {
             switch (type) {
@@ -162,16 +152,6 @@ public class Brick {
                 gc.strokeLine(centerX, centerY - 5, centerX, centerY + 5);
             }
         }
-        else if (isExploding && type == BrickType.EXPLOSIVE) {
-            // ✅ VẼ ẢNH NỔ
-            if (explosionImage != null) {
-                // Vẽ ảnh nổ lớn hơn gạch một chút để đẹp hơn
-                double explosionSize = width * 2;
-                double explosionX = x + width / 2 - explosionSize / 2;
-                double explosionY = y + height / 2 - explosionSize / 2;
-                gc.drawImage(explosionImage, explosionX, explosionY, explosionSize, explosionSize);
-            }
-        }
     }
 
     public int hasPowerup() {
@@ -224,17 +204,18 @@ public class Brick {
     }
 
     public boolean isInExplosionRange(Brick other) {
-        // Tính xem brick other có nằm trong 8 ô xung quanh không
-        double thisRow = Math.round(this.y / this.height);
-        double thisCol = Math.round(this.x / this.width);
-        double otherRow = Math.round(other.y / other.height);
-        double otherCol = Math.round(other.x / other.width);
+        double centerX = x + width / 2;
+        double centerY = y + height / 2;
+        double otherCenterX = other.x + other.width / 2;
+        double otherCenterY = other.y + other.height / 2;
 
-        // Kiểm tra 8 ô xung quanh
-        double rowDiff = Math.abs(thisRow - otherRow);
-        double colDiff = Math.abs(thisCol - otherCol);
+        double distance = Math.sqrt(
+                Math.pow(centerX - otherCenterX, 2) +
+                        Math.pow(centerY - otherCenterY, 2)
+        );
 
-        return rowDiff <= 1 && colDiff <= 1 && !(rowDiff == 0 && colDiff == 0);
+        int explosionRadius = 50;
+        return distance <= explosionRadius;
     }
 
     public static boolean areAllBricksDestroyed(List<Brick> bricks) {

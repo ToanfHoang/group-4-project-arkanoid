@@ -82,11 +82,11 @@ public class Brick {
 
         // Tăng tỷ lệ powerup cho gạch khó hơn
         if (type == BrickType.STRONG || type == BrickType.SUPER_STRONG) {
-            powerup = rand.nextInt(10); // 1/4 tỷ lệ
+            powerup = rand.nextInt(15);
         } else if (type == BrickType.EXPLOSIVE) {
-            powerup = rand.nextInt(10); // 1/3 tỷ lệ
+            powerup = rand.nextInt(15)
         } else if (type != BrickType.UNBREAKABLE) {
-            powerup = rand.nextInt(10); // 1/6 tỷ lệ
+            powerup = rand.nextInt(10);
         }
         if (type == BrickType.SUPER_STRONG) {
             superBrickFull  = new Image("file:resource/image/strong_brick.png");

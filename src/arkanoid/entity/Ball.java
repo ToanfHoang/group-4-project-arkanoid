@@ -28,7 +28,7 @@ public class Ball extends MovableObject {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.image = new Image("file:resource/image/ball_1.png");
-        this.fireballImage = new Image("file:resource/image/FireBall.png");
+        this.fireballImage = new Image("file:resource/image/FireBall1.png");
 
         this.dx = currentSpeed * Math.sin(Math.toRadians(45));
         this.dy = -currentSpeed * Math.cos(Math.toRadians(45));

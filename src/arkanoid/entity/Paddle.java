@@ -6,6 +6,8 @@ import javafx.scene.image.Image;
 
 public class Paddle extends MovableObject {
     private final Image image;
+    private boolean frozen = false;
+    private long freezeEndTime = 0;
 
     public Paddle(double x, double y, double width, double height) {
         super(x, y, width, height);
@@ -18,12 +20,18 @@ public class Paddle extends MovableObject {
     }
 
     public void setX(double newX, double boardWidth) {
-        if (newX < 0) {
-            this.x = 0;
-        } else if (newX + width > boardWidth) {
-            this.x = boardWidth - width;
-        } else {
-            this.x = newX;
+        if (!frozen) {
+            if (newX < 0) {
+                this.x = 0;
+            } else if (newX + width > boardWidth) {
+                this.x = boardWidth - width;
+            } else {
+                this.x = newX;
+            }
+        }
+
+        if (frozen && System.currentTimeMillis() > freezeEndTime) {
+            frozen = false;
         }
     }
 
@@ -40,5 +48,15 @@ public class Paddle extends MovableObject {
         if (this.width > 200) { // Ví dụ: giới hạn max 200
             this.width = 200;
         }
+        System.out.println("GrowPaddle activated!");
+    }
+
+    public void freeze(long duration) {
+        this.frozen = true;
+        this.freezeEndTime = System.currentTimeMillis() + duration;
+    }
+
+    public boolean isFrozen() {
+        return frozen;
     }
 }

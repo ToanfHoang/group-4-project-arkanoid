@@ -194,6 +194,7 @@ public class Ball extends MovableObject {
     }
 
     // Xử lý va chạm với gạch
+    // Xử lý va chạm với gạch
     public void handleBrickCollision(Brick brick) {
         double overlapLeft = (x + width) - brick.getX();
         double overlapRight = (brick.getX() + brick.getWidth()) - x;
@@ -203,10 +204,23 @@ public class Ball extends MovableObject {
         double minOverlap = Math.min(Math.min(overlapLeft, overlapRight),
                 Math.min(overlapTop, overlapBottom));
 
-        if (minOverlap == overlapTop || minOverlap == overlapBottom)
+        // xác định ball đi vào gạch và khi va chạm thì đẩy ra ngoài
+        if (minOverlap == overlapTop && dy > 0) {
             dy = -dy;
-        else
+            y = brick.getY() - height - 0.5; // Đẩy lên trên
+        }
+        else if (minOverlap == overlapBottom && dy < 0) {
+            dy = -dy;
+            y = brick.getY() + brick.getHeight() + 0.5; // Đẩy xuống dưới
+        }
+        else if (minOverlap == overlapLeft && dx > 0) {
             dx = -dx;
+            x = brick.getX() - width - 0.5; // Đẩy sang trái
+        }
+        else if (minOverlap == overlapRight && dx < 0) {
+            dx = -dx;
+            x = brick.getX() + brick.getWidth() + 0.5; // Đẩy sang phải
+        }
     }
 
     public void checkWallCollision() {

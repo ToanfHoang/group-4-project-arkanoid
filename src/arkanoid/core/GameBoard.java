@@ -41,6 +41,7 @@ public class GameBoard extends Pane {
     private final GameStats gameStats = new GameStats();
     private final List<Powerup> powerups = new ArrayList<>();
     private final boolean levelComplete = false;
+    private final List<ExplosionEffect> explosions = new ArrayList<>();
 
     private AnimationTimer gameLoop;
     private boolean gameOver;
@@ -217,6 +218,9 @@ public class GameBoard extends Pane {
         if (gameOver) return;
 
         Powerup.updateAllPowerups(powerups, paddle, this);
+
+        explosions.removeIf(ExplosionEffect::isExpired);
+
         List<Ball> ballsToRemove = new ArrayList<>();
         for (Ball ball : balls) {
             ball.update();
@@ -285,7 +289,10 @@ public class GameBoard extends Pane {
                     powerups.add(newPowerup);
                 }
                 //xử lý vụ nổ
-                brick.handleExplosion(bricks, gameStats);
+                if (brick.isExploding() && brick.getType() == Brick.BrickType.EXPLOSIVE) {
+                    explosions.add(new ExplosionEffect(brick)); // Thêm vào list để vẽ
+                    brick.handleExplosion(bricks, gameStats);
+                }
                 break;
             }
         }
@@ -395,6 +402,23 @@ public class GameBoard extends Pane {
         SaveManager.saveGame(saveData);
     }
 
+    // Thêm class helper để track explosion timing
+    private static class ExplosionEffect {
+        Brick brick;
+        long startTime;
+
+        ExplosionEffect(Brick brick) {
+            this.brick = brick;
+            this.startTime = System.currentTimeMillis();
+        }
+
+        boolean isExpired() {
+            return System.currentTimeMillis() - startTime > 300; // Hiển thị 300ms
+        }
+    }
+
+
+
     private void initNewGame() {
         gameOver = false;
         gameStats.reset(); // Reset cả score
@@ -419,6 +443,7 @@ public class GameBoard extends Pane {
         bricks.clear();
         unbreakableBricks.clear();
         powerups.clear();
+        explosions.clear();
 
         MapLoader.MapData mapData = levelManager.loadCurrentLevel();
         bricks.addAll(mapData.breakableBricks);
@@ -440,6 +465,11 @@ public class GameBoard extends Pane {
         // Vẽ gạch
         for (Brick brick : bricks) brick.render(gc);
         for (Brick brick : unbreakableBricks) brick.render(gc);
+
+        // Vẽ hiệu ứng nổ
+        for (ExplosionEffect explosion : explosions) {
+            explosion.brick.render(gc);
+        }
 
         // Vẽ powerups
         for (Powerup powerup : powerups) {
